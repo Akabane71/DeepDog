@@ -2,7 +2,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 # 读取多个.wav文件
-audio_files = ["./AudioFiles/area/red.wav", "./AudioFiles/signal/fire.wav", "./AudioFiles/people/0.wav"]
+audio_files = ["./AudioFiles/area/red.wav", "./AudioFiles/signal/fire.wav", "./AudioFiles/people/zero.wav"]
 audio_segments = [AudioSegment.from_wav(file) for file in audio_files]
 
 # 将音频片段组合成一个声音流

@@ -3,7 +3,8 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 class Audio:
-    def __call__(self, area='red',signal='fire',people = 0):
+
+    def __call__(self, area='red',signal='fire',people='zero'):
         return self.go(area,signal,people)
 
     # 具体实现
@@ -18,7 +19,7 @@ class Audio:
 
 if __name__ == '__main__':
     area = 'red'
-    signal = 'fire'
-    people = '0'
+    signal = 'fall'
+    people = 'one'
     a = Audio()
     a(area,signal,people)
