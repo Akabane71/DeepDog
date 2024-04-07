@@ -17,6 +17,7 @@ class Controller:
 
     def drive_dog(self, ges, val = 10000):
         print(ges)
+        # if lock not do anything
         if self.lock or ges == self.last_ges:
             return
 
