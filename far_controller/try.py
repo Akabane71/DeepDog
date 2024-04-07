@@ -24,5 +24,5 @@ def go(con):
 
 if __name__ == '__main__':
     # creat a controller
-    controller = Controller(server_address)
+    controller = Controller.Controller(server_address)
     go(controller)

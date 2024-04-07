@@ -37,7 +37,7 @@ def record_video(filename, frame_width=640, frame_height=480, duration=20):
     writer.close()
 
 if __name__ == "__main__":
-    filename = "recorded_video.mp4"  # 视频文件名
+    filename = "./videos/1.mp4"  # 视频文件名
     frame_width = 640  # 视频帧宽度
     frame_height = 480  # 视频帧高度
     duration = 10  # 录制时长（秒）

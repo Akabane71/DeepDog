@@ -12,7 +12,7 @@ os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运�
 client_address = ("192.168.1.103", 43897)
 server_address = ("192.168.1.120", 43893)
 # creat a controller
-controller = Controller(server_address)
+controller = Controller.Controller(server_address)
 
 # stand up
 pack = struct.pack('<3i', 0x21010202, 0, 0)
@@ -35,8 +35,6 @@ controller.send(struct.pack('<3i', 0x21010135, 0, 0))
 time.sleep(5)
 print(4)
 controller.send(pack)
-
-
 
 
 

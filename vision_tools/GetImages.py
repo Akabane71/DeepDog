@@ -37,7 +37,7 @@ def extract_frames(video_path, output_folder, interval=0.1):
     cap.release()
 
 if __name__ == "__main__":
-    video_path = "./videos/recorded_video.mp4"  # 视频文件路径
+    video_path = "./videos/1.mp4"  # 视频文件路径
     output_folder = "./imgs"  # 输出文件夹路径
     interval = 0.2  # 保存帧的时间间隔（秒）
 
