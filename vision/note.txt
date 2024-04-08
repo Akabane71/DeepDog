@@ -2,14 +2,29 @@
 
     1. Dog上的
         深度相机的距离测试 ----- > 用深度相机来感知距离
+			https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python#installation
+			python支持的版本只有Python versions 3.7, 3.8, 3.9, 3.10, 3.11 are supported
+			
+			rs-hello-realsense # 显示距离
+
+			
         1 ： 正面的摄像头
         4 ： 底下的摄像头
+
+    机器狗上具有 ONNX库
+
 
     2. Jetson Nano上的
 
         2.1 YOLOv5的视觉
 
         2.2 QR码的视觉
+            2.2.1  传统方案
+                    使用pyzbar
+
+            2.2.2  opencv_zoo方案【需要opencv-contrib-python】
+                pip install --upgrade opencv-contrib-python
+
 
 
 

@@ -1,4 +1,10 @@
 说明:
+	Linux语音库的安装:
+	sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+	sudo pip3 install pyaudio
+	pip install pydub
+
+
     这是一个语音播放的库
         1. 语音播放库
         2. mp4播放

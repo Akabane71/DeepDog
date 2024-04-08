@@ -10,7 +10,7 @@ def rename_files(folder_path):
     # 遍历文件并进行重新命名
     for i, file in enumerate(jpg_files):
         old_path = os.path.join(folder_path, file)
-        new_name = f"{i:03d}.jpg"  # 根据索引进行编号，例如000.jpg, 001.jpg, ..., 099.jpg, 100.jpg, ...
+        new_name = f"{i:04d}.jpg"  # 根据索引进行编号，例如000.jpg, 001.jpg, ..., 099.jpg, 100.jpg, ...
         new_path = os.path.join(folder_path, new_name)
 
         # 重命名文件

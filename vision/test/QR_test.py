@@ -1,18 +1,6 @@
 import cv2
 import pyzbar.pyzbar as pyzbar
 
-
-class QR():
-    """
-        输入一个
-    """
-    def __int__(self,cap):
-        self.cap = cap
-    def go(self):
-        res = ''
-        return res
-
-
 cap = cv2.VideoCapture(0)
 qr_list = []
 while True:
@@ -41,7 +29,3 @@ while True:
 cap.release()
 # 关闭所有窗口
 cv2.destroyAllWindows()
-
-
-
-
