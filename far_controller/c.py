@@ -3,6 +3,7 @@ from pynput import keyboard  # 第三方库
 import send_msg as sm
 host = '192.168.1.101:5000'
 
+
 def on_press(key):
     try:
         # 尝试获取按下的按键并输出到控制台
@@ -34,6 +35,10 @@ def on_press(key):
         # 清除状态
         if key.char == 'c':
             time.sleep(0.2)
+            print('\tclear')
+
+        if key.char == '1':
+            sm.go_get(host,'')
             print('\tclear')
 
     except AttributeError:

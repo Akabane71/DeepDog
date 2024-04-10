@@ -2,14 +2,19 @@ import json
 import os
 import struct
 import threading
-from flask import Flask, request
 import time
+
+from flask import Flask, request
+import requests
 
 from audio.Audio import Audio
 from controller import Controller
 
 
 os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
+
+#
+jetson_nano_host = '192.168.1.104:5000'
 
 # global config
 client_address = ("192.168.1.103", 43897)
@@ -44,15 +49,14 @@ def standup():
     pack = struct.pack('<3i', 0x21010202, 0, 0)
     print(1)
     controller.send(pack)
-    time.sleep(2)
     return 'stand up!'
 
 
 @app.route(rule='/forward', methods=['GET'])
 def forward():
-    pack = struct.pack('<3i', 0x21010130, 32600, 0)
+    pack = struct.pack('<3i', 0x21010130, 22600, 0)
     controller.send(pack)
-    time.sleep(0.2)
+    time.sleep(0.1)
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
     return 'forward'
@@ -60,27 +64,27 @@ def forward():
 
 @app.route(rule='/back', methods=['GET'])
 def back():
-    pack = struct.pack('<3i', 0x21010130, -12600, 0)
+    pack = struct.pack('<3i', 0x21010130, -22600, 0)
     controller.send(pack)
-    time.sleep(0.2)
+    time.sleep(0.1)
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
     return 'back'
 
 @app.route(rule='/left', methods=['GET'])
 def turn_left():
-    pack = struct.pack('<3i', 0x21010135, 22600, 0)
+    pack = struct.pack('<3i', 0x21010135, -10000, 0)
     controller.send(pack)
-    time.sleep(1)
+    time.sleep(0.1)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'left'
 
 @app.route(rule='/right', methods=['GET'])
 def turn_right():
-    pack = struct.pack('<3i', 0x21010135, -22600, 0)
+    pack = struct.pack('<3i', 0x21010135, 12600, 0)
     controller.send(pack)
-    time.sleep(1)
+    time.sleep(0.1)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'right'
@@ -135,6 +139,15 @@ def audio():
         print('signal:', signal)
         a.go(area, signal, people)
     return 'audio'
+
+@app.route(rule='/qr', methods=['POST'])
+def qr():
+    url = f'http://{jetson_nano_host}/qr'
+    response = requests.get(url)
+    data = response.text
+    print(data)
+    return data
+
 
 
 # 运行应用程序

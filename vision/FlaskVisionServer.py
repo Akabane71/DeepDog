@@ -3,6 +3,7 @@ import cv2
 from pyzbar import pyzbar
 from flask import Flask,request
 import numpy as np
+import QR
 
 # 创建 Flask 应用程序实例
 app = Flask(__name__)
@@ -14,7 +15,7 @@ except Exception as e:
     print('filed open cap')
     sys.exit(1)
 
-
+qr = QR.QR(cap)
 
 
 # 定义一个简单的路由
@@ -25,31 +26,18 @@ def hello_world():
         print(data)
         return data
     return 'Hello, World!'
-@app.route('/QR',methods=['GET'])
+@app.route('/qr',methods=['GET'])
 def QR_vision():
     try:
         ret, frame = cap.read()
     except Exception as e:
         return 'error: no cap'
-    qr_list = []
-    while True:
-        cv2.imshow('frame',frame)
-        if not ret:
-            return 'NO CAP'
-        else:
-            qrcodes = pyzbar.decode(frame)
-            if qrcodes:
-                for obj in qrcodes:
-                    print('Data:', obj.data.decode('utf-8'))
-                    decoded_data = obj.data.decode('utf-8')
-                    qr_list.append(decoded_data)
-            if len(qr_list) > 3:
-                if qr_list[0] == qr_list[1] == qr_list[2]:
-                    print('res:', qr_list[0])
-                    break
-                else:
-                    qr_list.pop(0)
-                return qr_list[0]
+    for i in range(200):
+        res = qr.go()
+        if res:
+            return res
+    return 'error: no'
+
 
 
 @app.route('/YOLO',methods=['GET'])
