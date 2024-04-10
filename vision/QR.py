@@ -8,9 +8,33 @@ class QR():
     """
     def __int__(self,cap):
         self.cap = cap
+
+    @staticmethod
+    def process(frame):
+
+        qrcodes = pyzbar.decode(frame)
+        if qrcodes:
+            for obj in qrcodes:
+                print('Data:', obj.data.decode('utf-8'))
+                decoded_data = obj.data.decode('utf-8')
+                return decoded_data
+
     def go(self):
-        res = ''
-        return res
+        qr_list = []
+        for i in range(10):
+            ret, frame = self.cap.read()
+            if ret:
+                processed_res = self.process(frame)
+                qr_list.append(processed_res)
+                if len(qr_list) > 3:
+                    if qr_list[0] == qr_list[1] == qr_list[2]:
+                        print('res:', qr_list[0])
+                        return qr_list[0]
+                    else:
+                        qr_list.pop(0)
+            else:
+                return 'not found'
+
 
 
 cap = cv2.VideoCapture(0)
@@ -41,7 +65,4 @@ while True:
 cap.release()
 # 关闭所有窗口
 cv2.destroyAllWindows()
-
-
-
 
