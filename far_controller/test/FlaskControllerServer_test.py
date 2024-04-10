@@ -2,14 +2,14 @@ import json
 import os
 import struct
 import threading
-
-from controller import Controller
 from flask import Flask, request
 import time
 
 from audio.Audio import Audio
+from controller import Controller
 
-# os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
+
+os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
 
 # global config
 client_address = ("192.168.1.103", 43897)
