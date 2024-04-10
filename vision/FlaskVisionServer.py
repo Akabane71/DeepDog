@@ -27,18 +27,30 @@ def hello_world():
     return 'Hello, World!'
 @app.route('/QR',methods=['GET'])
 def QR_vision():
-    ret, frame = cap.read()
+    try:
+        ret, frame = cap.read()
+    except Exception as e:
+        return 'error: no cap'
+    qr_list = []
     while True:
         cv2.imshow('frame',frame)
         if not ret:
             return 'NO CAP'
         else:
-            decoded_objects = pyzbar.decode(frame)
-            # 存储解码结果的字符串
-            decoded_data = ""
-            for obj in decoded_objects:
-                decoded_data += f"{obj.data.decode('utf-8')}\n\n"
-            return decoded_data
+            qrcodes = pyzbar.decode(frame)
+            if qrcodes:
+                for obj in qrcodes:
+                    print('Data:', obj.data.decode('utf-8'))
+                    decoded_data = obj.data.decode('utf-8')
+                    qr_list.append(decoded_data)
+            if len(qr_list) > 3:
+                if qr_list[0] == qr_list[1] == qr_list[2]:
+                    print('res:', qr_list[0])
+                    break
+                else:
+                    qr_list.pop(0)
+                return qr_list[0]
+
 
 @app.route('/YOLO',methods=['GET'])
 def YOLO_vision():

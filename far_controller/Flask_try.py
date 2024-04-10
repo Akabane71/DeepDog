@@ -15,3 +15,4 @@ def hello_world():
 # 运行应用程序
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
+

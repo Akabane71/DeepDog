@@ -1,3 +1,4 @@
+import sys
 import time
 import struct
 import threading
@@ -6,11 +7,12 @@ import psutil
 from controller import Controller
 
 
-os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
+# os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
 
 # global config
 client_address = ("192.168.1.103", 43897)
 server_address = ("192.168.1.120", 43893)
+
 # creat a controller
 controller = Controller.Controller(server_address)
 
