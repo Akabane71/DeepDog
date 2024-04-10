@@ -24,7 +24,7 @@ def heart_exchange(con):
     pack = struct.pack('<3i', 0x21040001, 0, 0)
     while True:
         if stop_heartbeat:
-            return
+            break
         con.send(pack)
         time.sleep(0.25)  # 4Hz
 heart_exchange_thread = threading.Thread(target=heart_exchange, args=(controller,))
@@ -37,44 +37,22 @@ a = Audio()
 app = Flask(__name__)
 
 
-standup_num = 0
-
+# GET相关的请求
 @app.route(rule='/standup', methods=['GET'])
 def standup():
-    global standup_num
-    # 第一次启动
-    if standup_num == 0:
-        # stand up
-        pack = struct.pack('<3i', 0x21010202, 0, 0)
-        print(1)
-        controller.send(pack)
-        time.sleep(3)
-        print(2)
-        controller.send(pack)
-        time.sleep(3)
-        print(3)
-        controller.send(pack)
-    else:
-        standup_num += 1
-        pack = struct.pack('<3i', 0x21010202, 0, 0)
-        print(1)
-        controller.send(pack)
-        time.sleep(3)
-    return 'stand up!'
-
-
-@app.route(rule='/stop', methods=['GET'])
-def stop():
+    # stand up
     pack = struct.pack('<3i', 0x21010202, 0, 0)
+    print(1)
     controller.send(pack)
-    return 'stop!'
+    time.sleep(2)
+    return 'stand up!'
 
 
 @app.route(rule='/forward', methods=['GET'])
 def forward():
     pack = struct.pack('<3i', 0x21010130, 32600, 0)
     controller.send(pack)
-    time.sleep(3)
+    time.sleep(0.2)
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
     return 'forward'
@@ -84,41 +62,25 @@ def forward():
 def back():
     pack = struct.pack('<3i', 0x21010130, -12600, 0)
     controller.send(pack)
-    time.sleep(1)
+    time.sleep(0.2)
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
     return 'back'
 
-
-@app.route(rule='/audio', methods=['POST'])
-def audio():
-    if request.method == "POST":
-        data = request.get_json()
-        data = json.loads(data)
-        area = data.get('area', '')
-        people = data.get('people', '')
-        signal = data.get('signal', '')
-        print('area:', area)
-        print('people:', people)
-        print('signal:', signal)
-        a.go(area, signal, people)
-    return 'audio'
-
-
-@app.route(rule='/left', methods=['POST'])
+@app.route(rule='/left', methods=['GET'])
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, 22600, 0)
     controller.send(pack)
-    time.sleep(2)
+    time.sleep(1)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'left'
 
-@app.route(rule='/right', methods=['POST'])
+@app.route(rule='/right', methods=['GET'])
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, -22600, 0)
     controller.send(pack)
-    time.sleep(2)
+    time.sleep(1)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'right'
@@ -128,6 +90,22 @@ def stop_heart():
     global stop_heartbeat
     stop_heartbeat = True
     return 'dog stop'
+
+@app.route(rule='/ladder', methods=['GET'])
+def change_to_ladder():
+    pack = struct.pack('<3i', 0, 0, 0)
+    controller.send(pack)
+    return 'change to ladder'
+
+
+@app.route(rule='/run', methods=['GET'])
+def change_to_run():
+    """
+    :return:
+    """
+    pack = struct.pack('<3i', 0, 0, 0)
+    controller.send(pack)
+    return 'change to run'
 
 @app.route(rule='/re_heart', methods=['GET'])
 def re_heart():
@@ -143,6 +121,20 @@ def clear():
     return 'clear'
 
 
+# POST相关的请求
+@app.route(rule='/audio', methods=['POST'])
+def audio():
+    if request.method == "POST":
+        data = request.get_json()
+        data = json.loads(data)
+        area = data.get('area', '')
+        people = data.get('people', '')
+        signal = data.get('signal', '')
+        print('area:', area)
+        print('people:', people)
+        print('signal:', signal)
+        a.go(area, signal, people)
+    return 'audio'
 
 
 # 运行应用程序
