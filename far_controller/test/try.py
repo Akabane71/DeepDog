@@ -12,8 +12,7 @@ from audio.Audio import Audio
 from controller import Controller
 
 """
-    向前走一步的版本
-
+    一直往前走的版本
 """
 
 
@@ -30,8 +29,7 @@ controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
 
-
-# 心跳开启
+# start to exchange heartbeat pack
 def heart_exchange(con):
     pack = struct.pack('<3i', 0x21040001, 0, 0)
     while True:
@@ -54,8 +52,9 @@ app = Flask(__name__)
 def standup():
     # stand up
     pack = struct.pack('<3i', 0x21010202, 0, 0)
-    print(1)
     controller.send(pack)
+    print('stand up')
+    time.sleep(1)
     return 'stand up!'
 
 
@@ -63,38 +62,51 @@ def standup():
 def forward():
     pack = struct.pack('<3i', 0x21010130, 22600, 0)
     controller.send(pack)
-    time.sleep(0.1)
+    return 'forward'
+
+@app.route(rule='/forward_', methods=['GET'])
+def forward_():
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
-    return 'forward'
+    return 'stop forward'
 
 
 @app.route(rule='/back', methods=['GET'])
 def back():
     pack = struct.pack('<3i', 0x21010130, -22600, 0)
     controller.send(pack)
-    time.sleep(0.1)
+    return 'back'
+
+@app.route(rule='/back_', methods=['GET'])
+def back_():
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
-    return 'back'
+    return 'stop back'
 
 @app.route(rule='/left', methods=['GET'])
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, -10000, 0)
     controller.send(pack)
-    time.sleep(0.1)
+    return 'left'
+
+@app.route(rule='/left_', methods=['GET'])
+def turn_left_():
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
-    return 'left'
+    return 'stop turn left'
 
 @app.route(rule='/right', methods=['GET'])
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, 12600, 0)
     controller.send(pack)
-    time.sleep(0.1)
+    return 'right'
+
+
+@app.route(rule='/right', methods=['GET'])
+def turn_right_():
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
-    return 'right'
+    return 'stop turn right'
 
 @app.route(rule='/stop_heart', methods=['GET'])
 def stop_heart():
@@ -157,10 +169,8 @@ def qr():
 
 
 # ----------------------------------------------------------------------------------------
-
-# 将摄像头封装成视频流
+# 生成视频流
 def generate_frames():
-    global vision_sign
     try:
         cap = cv2.VideoCapture(0)
         while True:

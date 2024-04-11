@@ -3,15 +3,11 @@ import pyzbar.pyzbar as pyzbar
 
 
 class QR:
-    """
-        输入一个
-    """
-    def __int__(self,cap):
+    def __init__(self,cap):
         self.cap = cap
 
     @staticmethod
     def process(frame):
-
         qrcodes = pyzbar.decode(frame)
         if qrcodes:
             for obj in qrcodes:

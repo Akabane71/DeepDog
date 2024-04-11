@@ -2,6 +2,11 @@ import time
 from pynput import keyboard  # 第三方库
 import send_msg as sm
 host = '192.168.1.101:5000'
+import threading
+
+'''
+    一次只移动一小段距离
+'''
 
 
 def on_press(key):
