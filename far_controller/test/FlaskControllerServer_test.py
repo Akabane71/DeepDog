@@ -4,7 +4,8 @@ import struct
 import threading
 import time
 
-from flask import Flask, request
+import cv2
+from flask import Flask, request,Response
 import requests
 
 from audio.Audio import Audio
@@ -147,6 +148,36 @@ def qr():
     data = response.text
     print(data)
     return data
+
+
+# ----------------------------------------------------------------------------------------
+def generate_frames():
+    try:
+        cap = cv2.VideoCapture(0)
+        while True:
+
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
+
+                # 将处理后的视频帧转换为字节流
+                ret, buffer = cv2.imencode('.jpg', frame)
+                frame_bytes = buffer.tobytes()
+
+                # 以字节流的形式发送视频帧
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+    except Exception as e:
+        print('error')
+
+
+@app.route(rule='/video')
+def video():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 
 
