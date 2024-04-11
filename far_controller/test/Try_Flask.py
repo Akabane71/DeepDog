@@ -55,70 +55,70 @@ def standup():
     controller.send(pack)
     print('stand up')
     time.sleep(1)
-    return 'stand up!'
+    return 'dog stand up!'
 
 
 @app.route(rule='/forward', methods=['GET'])
 def forward():
     pack = struct.pack('<3i', 0x21010130, 22600, 0)
     controller.send(pack)
-    return 'forward'
+    return 'dog forward'
 
 @app.route(rule='/forward_', methods=['GET'])
 def forward_():
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
-    return 'stop forward'
+    return 'dog stop forward'
 
 
 @app.route(rule='/back', methods=['GET'])
 def back():
     pack = struct.pack('<3i', 0x21010130, -22600, 0)
     controller.send(pack)
-    return 'back'
+    return 'dog back'
 
 @app.route(rule='/back_', methods=['GET'])
 def back_():
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
-    return 'stop back'
+    return 'dog stop back'
 
 @app.route(rule='/left', methods=['GET'])
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, -10000, 0)
     controller.send(pack)
-    return 'left'
+    return 'dog left'
 
 @app.route(rule='/left_', methods=['GET'])
 def turn_left_():
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
-    return 'stop turn left'
+    return 'dog stop turn left'
 
 @app.route(rule='/right', methods=['GET'])
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, 12600, 0)
     controller.send(pack)
-    return 'right'
+    return 'dog right'
 
 
-@app.route(rule='/right', methods=['GET'])
+@app.route(rule='/right_', methods=['GET'])
 def turn_right_():
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
-    return 'stop turn right'
+    return 'dog stop turn right'
 
 @app.route(rule='/stop_heart', methods=['GET'])
 def stop_heart():
     global stop_heartbeat
     stop_heartbeat = True
-    return 'dog stop'
+    return 'dog heart_stop'
 
 @app.route(rule='/ladder', methods=['GET'])
 def change_to_ladder():
     pack = struct.pack('<3i', 0, 0, 0)
     controller.send(pack)
-    return 'change to ladder'
+    return 'dog change to ladder'
 
 
 @app.route(rule='/run', methods=['GET'])
@@ -183,7 +183,7 @@ def generate_frames():
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
                 # 将处理后的视频帧转换为字节流
-                ret, buffer = cv2.imencode('.jpg', frame)
+                ret, buffer = cv2.imencode('.png', frame)
                 frame_bytes = buffer.tobytes()
 
                 # 以字节流的形式发送视频帧

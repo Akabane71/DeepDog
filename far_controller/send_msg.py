@@ -9,8 +9,7 @@ def go_get(host,u):
 
 # 多进程发送
 def go_get_thread(host,u):
-    url = f'http://{host}/{u}'
-    threading.Thread(target=go_get, args=("my_host", "left")).start()
+    threading.Thread(target=go_get, args=(host, u)).start()
 
 def go_audio(host,u,a='read',p='one',s='fire'):
     data = {
