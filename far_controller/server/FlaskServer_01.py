@@ -28,6 +28,9 @@ server_address = ("192.168.1.120", 43893)
 controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
+fb_val = 22600  # 前进速度
+turn_val = 10000 # 转向速度
+move_val = 22600 # 平移速度
 
 # start to exchange heartbeat pack
 def heart_exchange(con):
@@ -57,91 +60,102 @@ def standup():
     time.sleep(1)
     return 'dog stand up!'
 
-
+# ------------------------------
+#   前进
 @app.route(rule='/forward', methods=['GET'])
 def forward():
-    pack = struct.pack('<3i', 0x21010130, 22600, 0)
+    pack = struct.pack('<3i', 0x21010130, fb_val, 0)
     controller.send(pack)
     return 'dog forward'
-
-@app.route(rule='/forward_', methods=['GET'])
-def forward_():
-    pack = struct.pack('<3i', 0x21010130, 0, 0)
-    controller.send(pack)
-    return 'dog stop forward'
-
-
 @app.route(rule='/back', methods=['GET'])
 def back():
-    pack = struct.pack('<3i', 0x21010130, -22600, 0)
+    pack = struct.pack('<3i', 0x21010130, -fb_val, 0)
     controller.send(pack)
     return 'dog back'
-
-@app.route(rule='/back_', methods=['GET'])
-def back_():
+@app.route(rule='/stop_fb', methods=['GET'])
+def stop_fb():
     pack = struct.pack('<3i', 0x21010130, 0, 0)
     controller.send(pack)
-    return 'dog stop back'
+    return 'dog stop fb'
 
+
+# -----------------------------------------------
+#   转向
 @app.route(rule='/left', methods=['GET'])
 def turn_left():
-    pack = struct.pack('<3i', 0x21010135, -10000, 0)
+    pack = struct.pack('<3i', 0x21010135, -turn_val, 0)
     controller.send(pack)
     return 'dog left'
-
-@app.route(rule='/left_', methods=['GET'])
-def turn_left_():
-    pack = struct.pack('<3i', 0x21010135, 0, 0)
-    controller.send(pack)
-    return 'dog stop turn left'
-
 @app.route(rule='/right', methods=['GET'])
 def turn_right():
-    pack = struct.pack('<3i', 0x21010135, 12600, 0)
+    pack = struct.pack('<3i', 0x21010135, turn_val, 0)
     controller.send(pack)
     return 'dog right'
-
-
-@app.route(rule='/right_', methods=['GET'])
-def turn_right_():
+@app.route(rule='/stop_turn', methods=['GET'])
+def stop_turn():
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
-    return 'dog stop turn right'
+    return 'dog stop turn'
 
+
+# ------------------------------------------------
+#  左右平移
+@app.route(rule='/move_left', methods=['GET'])
+def move_left():
+    pack = struct.pack('<3i', 0x21010131, -move_val, 0)
+    controller.send(pack)
+    return 'dog move left'
+@app.route(rule='/move_right', methods=['GET'])
+def move_right():
+    pack = struct.pack('<3i', 0x21010131, move_val, 0)
+    controller.send(pack)
+    return 'dog move right'
+@app.route(rule='/move_stop', methods=['GET'])
+def stop_move():
+    pack = struct.pack('<3i', 0x21010131, 0, 0)
+    controller.send(pack)
+    return 'dog stop move'
+
+# ----------------------------------------------------------------------------------------
+#   模式切换
 @app.route(rule='/stop_heart', methods=['GET'])
 def stop_heart():
     global stop_heartbeat
     stop_heartbeat = True
     return 'dog heart_stop'
-
-@app.route(rule='/ladder', methods=['GET'])
-def change_to_ladder():
-    pack = struct.pack('<3i', 0, 0, 0)
-    controller.send(pack)
-    return 'dog change to ladder'
-
-
-@app.route(rule='/run', methods=['GET'])
-def change_to_run():
-    """
-    :return:
-    """
-    pack = struct.pack('<3i', 0, 0, 0)
-    controller.send(pack)
-    return 'change to run'
-
 @app.route(rule='/re_heart', methods=['GET'])
 def re_heart():
     global stop_heartbeat
     stop_heartbeat = False
     return 'dog restart'
 
+# -------------------------
+# 楼梯姿态
+@app.route(rule='/ladder', methods=['GET'])
+def change_to_ladder():
+    pack = struct.pack('<3i', 0x21010401, 0, 0)
+    controller.send(pack)
+    return 'dog change to ladder'
+# 行走姿态
+@app.route(rule='/walk', methods=['GET'])
+def change_to_walk():
+    pack = struct.pack('<3i', 0x21010300, 0, 0)
+    controller.send(pack)
+    return 'dog change to walk'
+# 跑步姿态
+@app.route(rule='/run', methods=['GET'])
+def change_to_run():
+    pack = struct.pack('<3i', 0, 0, 0)
+    controller.send(pack)
+    return 'doge change to run'
+
+
 
 @app.route(rule='/clear', methods=['GET'])
 def clear():
     pack = struct.pack('<3i', 0x21010C05, 0, 0)
     controller.send(pack)
-    return 'clear'
+    return 'dog clear'
 
 
 # POST相关的请求
@@ -157,7 +171,7 @@ def audio():
         print('people:', people)
         print('signal:', signal)
         a.go(area, signal, people)
-    return 'audio'
+    return 'dog audio'
 
 @app.route(rule='/qr', methods=['POST'])
 def qr():
@@ -183,7 +197,7 @@ def generate_frames():
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
                 # 将处理后的视频帧转换为字节流
-                ret, buffer = cv2.imencode('.png', frame)
+                ret, buffer = cv2.imencode('.jpg', frame)
                 frame_bytes = buffer.tobytes()
 
                 # 以字节流的形式发送视频帧
@@ -193,12 +207,9 @@ def generate_frames():
         print('error')
 
 
-@app.route(rule='/video')
+@app.route(rule='/')
 def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-
 
 # 运行应用程序
 if __name__ == '__main__':
