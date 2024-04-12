@@ -18,13 +18,13 @@
 
         2.1 YOLOv5的视觉
 
-        2.2 QR码的视觉
+        2.2 QR码的视觉  [可以在DeepDog上]
             2.2.1  传统方案
-                    使用pyzbar
+                使用pyzbar
 
             2.2.2  opencv_zoo方案【需要opencv-contrib-python】
                 pip install --upgrade opencv-contrib-python
 
 
 
-
+                

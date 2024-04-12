@@ -33,7 +33,7 @@ def generate_frames():
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
                 # 将处理后的视频帧转换为字节流
-                params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
+                params = [cv2.IMWRITE_JPEG_QUALITY, 30]  # 质量设置为50
                 ret, buffer = cv2.imencode('.jpg', frame,params)
                 frame_bytes = buffer.tobytes()
 
@@ -49,7 +49,7 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/qr',methods=['GET'])
+@app.route('/qr',methods=['POST'])
 def QR_vision():
     try:
         ret, frame = cap.read()
@@ -62,7 +62,7 @@ def QR_vision():
     return 'error: no'
 
 
-@app.route('/YOLO',methods=['GET'])
+@app.route('/YOLO',methods=['POST'])
 def YOLO_vision():
 
     # 返回值为一个json列表 [返回的结果]

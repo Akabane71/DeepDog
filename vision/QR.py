@@ -1,7 +1,6 @@
 import cv2
 import pyzbar.pyzbar as pyzbar
 
-
 class QR:
     def __init__(self,cap):
         self.cap = cap
@@ -30,7 +29,6 @@ class QR:
                         qr_list.pop(0)
             else:
                 return 'not found'
-
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0)

@@ -30,7 +30,7 @@ controller = Controller.Controller(server_address)
 stop_heartbeat = False
 fb_val = 22600  # 前进速度
 turn_val = 10000 # 转向速度
-move_val = 22600 # 平移速度
+move_val = 30000 # 平移速度
 
 # start to exchange heartbeat pack
 def heart_exchange(con):
@@ -81,12 +81,12 @@ def stop_fb():
 
 # -----------------------------------------------
 #   转向
-@app.route(rule='/left', methods=['GET'])
+@app.route(rule='/turn_left', methods=['GET'])
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, -turn_val, 0)
     controller.send(pack)
     return 'dog left'
-@app.route(rule='/right', methods=['GET'])
+@app.route(rule='/turn_right', methods=['GET'])
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, turn_val, 0)
     controller.send(pack)
@@ -110,7 +110,7 @@ def move_right():
     pack = struct.pack('<3i', 0x21010131, move_val, 0)
     controller.send(pack)
     return 'dog move right'
-@app.route(rule='/move_stop', methods=['GET'])
+@app.route(rule='/stop_move', methods=['GET'])
 def stop_move():
     pack = struct.pack('<3i', 0x21010131, 0, 0)
     controller.send(pack)
@@ -196,8 +196,9 @@ def generate_frames():
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
+                params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
-                ret, buffer = cv2.imencode('.jpg', frame)
+                ret, buffer = cv2.imencode('.jpg', frame,params)
                 frame_bytes = buffer.tobytes()
 
                 # 以字节流的形式发送视频帧
