@@ -10,7 +10,6 @@ server_address = ("192.168.1.120", 43893)
 class GO():
     def __init__(self,server_address):
         self.con = Controller(server_address)
-
     @staticmethod
     def heart_exchange(con):
         pack = struct.pack('<3i', 0x21040001, 0, 0)
@@ -24,7 +23,7 @@ class GO():
         self.con.send(pack)
 
     # 发送指令
-    def go(self,msg,val=0):
+    def go(self,msg,val=0,):
         threading.Thread(target=self.send,args=(msg,val,)).start()
 
 

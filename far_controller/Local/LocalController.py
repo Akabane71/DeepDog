@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 from pynput import keyboard
@@ -150,9 +151,14 @@ def on_release(key):
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
 
+
+
 if __name__ == '__main__':
     # 启动生命
-    threading.Thread(target=g.heart_exchange,args=(g.con,)).start()
+    mt = threading.Thread(target=g.heart_exchange,args=(g.con,))
+    # 守护线程
+    mt.daemon = True
+    mt.start()
     print('dog life 启动')
     # 启动监听
     try:
