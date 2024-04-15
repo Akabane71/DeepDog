@@ -207,7 +207,7 @@ def generate_frames():
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
-                params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
+                # params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
                 ret, buffer = cv2.imencode('.jpg', frame,params)
                 frame_bytes = buffer.tobytes()
