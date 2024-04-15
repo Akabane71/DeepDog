@@ -31,6 +31,7 @@ stop_heartbeat = False
 fb_val = 22600  # 前进速度
 turn_val = 10000 # 转向速度
 move_val = 30000 # 平移速度
+cap_number = 0
 
 # start to exchange heartbeat pack
 def heart_exchange(con):
@@ -46,7 +47,7 @@ heart_exchange_thread.start()
 # 创建音频对象
 a = Audio()
 
-# 创建 Flask 应用程序实例
+# 创建 Flask_give 应用程序实例
 app = Flask(__name__)
 
 
@@ -173,7 +174,7 @@ def audio():
         a.go(area, signal, people)
     return 'dog audio'
 
-@app.route(rule='/qr', methods=['POST'])
+@app.route(rule='/qr', methods=['GET'])
 def qr():
     url = f'http://{jetson_nano_host}/qr'
     response = requests.get(url)
@@ -183,12 +184,22 @@ def qr():
 
 
 # ----------------------------------------------------------------------------------------
+
+# 改变摄像头
+@app.route(rule='/change_cap', methods=['GET'])
+def change_cap():
+    global cap_number
+    if cap_number == 0:
+        cap_number = 4
+    else:
+        cap_number = 0
+    return 'dog cap changed'
+
 # 生成视频流
 def generate_frames():
     try:
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(cap_number)
         while True:
-
             # 读取视频帧
             success, frame = cap.read()
             if not success:

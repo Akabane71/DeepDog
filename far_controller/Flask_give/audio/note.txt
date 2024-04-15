@@ -4,11 +4,6 @@
 	sudo pip3 install pyaudio
 	pip install pydub
 
-    存在一些报错 -----> 安装ffmpeg库
-    sudo apt update
-    sudo apt install ffmpeg
-
-
 
     这是一个语音播放的库
         1. 语音播放库

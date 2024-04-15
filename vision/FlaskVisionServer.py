@@ -5,7 +5,7 @@ from flask import Flask, request, Response
 import numpy as np
 import QR
 
-# 创建 Flask 应用程序实例
+# 创建 Flask_give 应用程序实例
 app = Flask(__name__)
 
 
@@ -49,7 +49,7 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/qr',methods=['POST'])
+@app.route('/qr',methods=['GET'])
 def QR_vision():
     try:
         ret, frame = cap.read()
@@ -62,7 +62,7 @@ def QR_vision():
     return 'error: no'
 
 
-@app.route('/YOLO',methods=['POST'])
+@app.route('/YOLO',methods=['GET'])
 def YOLO_vision():
 
     # 返回值为一个json列表 [返回的结果]

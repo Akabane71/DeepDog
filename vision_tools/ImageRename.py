@@ -1,5 +1,8 @@
 import os
 
+"""
+    将文件全部重命名
+"""
 def rename_files(folder_path):
     # 获取文件夹中所有的.jpg文件
     jpg_files = [file for file in os.listdir(folder_path) if file.endswith('.jpg')]

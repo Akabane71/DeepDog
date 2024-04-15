@@ -1,9 +1,4 @@
-import os
 import socket
-import struct
-import sys
-import threading
-import time
 
 
 class Controller:
@@ -16,4 +11,3 @@ class Controller:
     # used to send a pack to robot dog
     def send(self, pack):
         self.socket.sendto(pack, self.dst)
-

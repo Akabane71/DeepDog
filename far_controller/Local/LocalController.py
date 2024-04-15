@@ -1,13 +1,27 @@
+import threading
 import time
 from pynput import keyboard
 
 import send_msg as sm
 
+"""
+    本地控制机器狗 LocalContrDog
+"""
+
 # Dog_host
 host = '192.168.1.101:5000'
+# 运动主机的端口
+server_address = ("192.168.1.120", 43893)
+
+fb_val = 22600  # 前进速度
+turn_val = 10000 # 转向速度
+move_val = 30000 # 平移速度
 
 pressed_keys = set()
 pressed_once = set()
+
+# 初始化控制对象
+g = sm.GO(server_address)
 
 
 def on_press(key):
@@ -20,59 +34,68 @@ def on_press(key):
         key_char = key.name
     # 功能切换
     if key_char == 'space':
-        sm.go_get(host, 'standup')
+        g.go(msg=0x21010202,val=0)
         print('\tstand_up')
 
     if key_char == 'r':
-        sm.go_get(host, 'run')
+        g.go(msg=0x21010307,val=fb_val)
         print('\nrun')
 
     if key_char == 'l':
-        sm.go_get(host, 'ladder')
+        g.go(msg=0x21010401,val=0)
+        print('\nladder')
+
+    if key_char == 'j':
+        g.go(msg=0x21010206,val=0)
         print('\nladder')
 
     if key_char == 'n':
-        sm.go_get(host, 'walk')
+        g.go(msg=0x21010300,val=0)
         print('\nwalk')
     if key_char == 'c':
-        sm.go_get(host, 'clear')
+        g.go(msg=0x21010c05,val=0)
         print('\nclear')
+
+    # 增加切换摄像头功能
+    # if key_char == 'tab':
+    #     # sm.go_get(host, 'change_cap')
+    #     print('\ncap changed')
 
     # 基础移动
     if key_char == 'w':
         if key_char not in pressed_keys:
             print('\t forward')
-            sm.go_get_thread(host,'forward')
+            g.go(msg=0x21010130,val=fb_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
     if key_char == 's':
         if key_char not in pressed_keys:
             print('\t back')
-            sm.go_get_thread(host,'back')
+            g.go(msg=0x21010130,val=-fb_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
     if key_char == 'a':
         if key_char not in pressed_keys:
             print('\t move_left')
-            sm.go_get_thread(host,'move_left')
+            g.go(msg=0x21010131,val=-move_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
     if key_char == 'd':
         if key_char not in pressed_keys:
             print('\t move_right')
-            sm.go_get_thread(host,'move_right')
+            g.go(msg=0x21010131,val=move_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
     if key_char == 'q':
         if key_char not in pressed_keys:
             print('\t left')
-            sm.go_get_thread(host,'turn_left')
+            g.go(msg=0x21010135,val=-turn_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
     if key_char == 'e':
         if key_char not in pressed_keys:
             print('\t right')
-            sm.go_get_thread(host,'turn_right')
+            g.go(msg=0x21010135,val=turn_val)
             pressed_keys.add(key_char)
             pressed_once.add(key_char)
 
@@ -93,41 +116,44 @@ def on_release(key):
     if key_char == 'w':
         if key_char in pressed_keys:
             print('\tstop forward')
-            sm.go_get_thread(host, 'stop_fb')
+            g.go(msg=0x21010130,val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
     if key_char == 's':
         if key_char in pressed_keys:
             print('\tstop back')
-            sm.go_get_thread(host, 'stop_fb')
+            g.go(msg=0x21010130,val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
     if key_char == 'a':
         if key_char in pressed_keys:
             print('\tstop move left')
-            sm.go_get_thread(host, 'stop_move')
+            g.go(msg=0x21010131,val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
     if key_char == 'd':
         if key_char in pressed_keys:
             print('\tstop move right')
-            sm.go_get_thread(host, 'stop_move')
+            g.go(msg=0x21010131,val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
     if key_char == 'q':
         if key_char in pressed_keys:
             print('\tstop left')
-            sm.go_get_thread(host, 'stop_turn')
+            g.go(msg=0x21010135, val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
     if key_char == 'e':
         if key_char in pressed_keys:
             print('\tstop right')
-            sm.go_get_thread(host, 'stop_turn')
+            g.go(msg=0x21010135,val=0)
             pressed_keys.remove(key_char)
             pressed_once.remove(key_char)
 
 if __name__ == '__main__':
+    # 启动生命
+    threading.Thread(target=g.heart_exchange,args=(g.con,)).start()
+    print('dog life 启动')
     # 启动监听
     try:
         with keyboard.Listener(on_press=on_press,

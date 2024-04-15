@@ -1,6 +1,10 @@
 import os
 import psutil
 
+"""
+    杀python进程的脚本9
+"""
+
 # 杀掉占用最高的进程
 print("kill the biggest python process")
 # 遍历所有进程

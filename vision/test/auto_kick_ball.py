@@ -3,6 +3,7 @@ import requests
 from threading import Thread
 import numpy as np
 
+
 def go(w):
     pass
 
