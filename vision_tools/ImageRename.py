@@ -1,7 +1,7 @@
 import os
 
 """
-    将文件全部重命名
+    将.jpg文件全部重命名
 """
 def rename_files(folder_path):
     # 获取文件夹中所有的.jpg文件

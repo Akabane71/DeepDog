@@ -2,6 +2,9 @@ import imageio  # RGB 需要手动安装
 import numpy as np
 import cv2 # BGR
 
+"""
+    获取一段视频
+"""
 def record_video(filename, frame_width=640, frame_height=480, duration=20):
     # 创建视频编码器
     writer = imageio.get_writer(filename, fps=16*2)

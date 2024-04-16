@@ -1,6 +1,9 @@
 import cv2
 import os
 
+"""
+    从视频中每隔一段时间截取一张作为照片存储到指定的目录
+"""
 def extract_frames(video_path, output_folder, interval=0.1):
     # 打开视频文件
     cap = cv2.VideoCapture(video_path)

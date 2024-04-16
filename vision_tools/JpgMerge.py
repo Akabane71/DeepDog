@@ -2,7 +2,7 @@ import os
 import shutil
 
 """
-    将多个文件夹下的图片移动到指定文件夹下并将重复文件重新命名
+    将多个文件夹下的图片文件移动到指定文件夹下并将重复文件重新命名
 """
 
 def merge_images(source_dirs, destination_dir):

@@ -214,13 +214,13 @@ if __name__ == "__main__":
     print('pred: 位置[0, 10000, :]的数组')
     # print(output.shape)
     # print(output[0, 10000, :])
-    outbox = filter_box(output, 0.5, 0.5)  # 最终剩下的Anchors：0 1 2 3 4 5 分别是 x1 y1 x2 y2 score class
+    outbox = filter_box(output, 0.4, 0.5)  # 最终剩下的Anchors：0 1 2 3 4 5 分别是 x1 y1 x2 y2 score class
     print('outbox( x1 y1 x2 y2 score class):')
     # print(outbox)
     if len(outbox) == 0:
         print('没有发现物体')
         sys.exit(0)
     or_img = draw(or_img, outbox)
-    cv2.imwrite('./run/images/res.jpg', or_img)
+    # cv2.imwrite('./run/images/res.jpg', or_img)
     cv2.imshow('result', or_img)
     cv2.waitKey(0)

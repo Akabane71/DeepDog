@@ -1,6 +1,9 @@
 import cv2
 import os
 
+"""
+    打开摄像头按下space截图，存储到本地
+"""
 def capture_and_save_frames(output_directory, target_size=(512, 512)):
     # 创建输出目录
     if not os.path.exists(output_directory):

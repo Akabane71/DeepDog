@@ -27,7 +27,7 @@ def on_press(key):
         sm.go_get(host, 'run')
         print('\nrun')
 
-    if key_char == 'l':
+    if key_char == 'f':
         sm.go_get(host, 'ladder')
         print('\nladder')
 

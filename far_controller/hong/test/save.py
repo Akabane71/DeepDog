@@ -4,6 +4,8 @@ from pynput import keyboard
 
 """
     记录运动的脚本
+    
+    space 
 """
 
 pressed_keys = set()

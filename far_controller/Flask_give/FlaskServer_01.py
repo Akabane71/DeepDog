@@ -31,7 +31,7 @@ stop_heartbeat = False
 fb_val = 22600  # 前进速度
 turn_val = 10000 # 转向速度
 move_val = 30000 # 平移速度
-cap_number = 0
+cap_number = 0  # 当前摄像头
 
 # start to exchange heartbeat pack
 def heart_exchange(con):
@@ -207,7 +207,7 @@ def generate_frames():
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
-                # params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
+                params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
                 ret, buffer = cv2.imencode('.jpg', frame,params)
                 frame_bytes = buffer.tobytes()

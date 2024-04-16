@@ -11,7 +11,7 @@ def go_get(host,u):
 def go_get_thread(host,u):
     threading.Thread(target=go_get, args=(host, u)).start()
 
-def go_audio(host,u,a='read',p='one',s='fire'):
+def go_audio(host,u,a='red',p='one',s='fire'):
     data = {
         'area':a,
         'people':p,
