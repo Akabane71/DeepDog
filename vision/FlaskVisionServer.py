@@ -5,7 +5,7 @@ from flask import Flask, request, Response
 import numpy as np
 import QR
 
-# 创建 Flask_give 应用程序实例
+# 创建 Flask 应用程序实例
 app = Flask(__name__)
 
 
