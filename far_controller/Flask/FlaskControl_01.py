@@ -37,11 +37,20 @@ def on_press(key):
     if key_char == 'c':
         sm.go_get(host, 'clear')
         print('\tclear')
+    # if key_char == 'b':
+    #     sm.go_get(host, 'auto_ball')
+    #     print('\auto ball')
     if key_char == 'p':
         for i in range(3):
             sm.go_stand_up()
             time.sleep(1)
         print('\tcap changed')
+    if key_char == '1':
+        sm.go_get_thread(host,'1')
+        print('\tmore 1')
+    if key_char == '2':
+        sm.go_get_thread(host,'2')
+        print('\tmore 2')
 
     # 基础移动
     if key_char == 'w':

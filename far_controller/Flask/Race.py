@@ -6,22 +6,16 @@ import threading
 import time
 
 import cv2
-from flask import Flask, Response,request
+from flask import Flask, Response, request
 
 from audio.Audio import Audio
 from controller import Controller
 from qr import QR
 
 """
-    一直往前走的版本,正式版本
-    
-    完成:
-        1. 更新语音
-        2. 
+    比赛专业版本
 """
-
 os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
-
 #
 jetson_nano_host = '192.168.1.104:5000'
 
@@ -101,22 +95,28 @@ def stop_fb():
 #   转向
 @app.route(rule='/turn_left', methods=['GET'])
 def turn_left():
-    pack = struct.pack('<3i', 0x21010135, -turn_val, 0)
+    pack = struct.pack('<3i', 0x21010135, -13000, 0)
+    controller.send(pack)
+    time.sleep(1.25)
+    pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog left'
 
 
 @app.route(rule='/turn_right', methods=['GET'])
 def turn_right():
-    pack = struct.pack('<3i', 0x21010135, turn_val, 0)
+    pack = struct.pack('<3i', 0x21010135, 13000, 0)
+    controller.send(pack)
+    time.sleep(1.25)
+    pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog right'
 
 
 @app.route(rule='/stop_turn', methods=['GET'])
 def stop_turn():
-    pack = struct.pack('<3i', 0x21010135, 0, 0)
-    controller.send(pack)
+    # pack = struct.pack('<3i', 0x21010135, 0, 0)
+    # controller.send(pack)
     return 'dog stop turn'
 
 
@@ -254,7 +254,7 @@ def audio():
                 area = data.get('area')
                 signal = data.get('signal')
                 people = data.get('people')
-                a.dxl(area=area,signal=signal,people=people)
+                a.dxl(area=area, signal=signal, people=people)
                 return 'dog dxl audio'
         return 'error: dog not audio'
 
@@ -276,6 +276,7 @@ def qr():
     finally:
         if cap is not None:
             cap.release()
+
 
 # ----------------------------------------------------------------------------------------
 # 发送一张
@@ -342,21 +343,21 @@ def generate_frames():
         if cap is not None:
             cap.release()
 
-# -------------------------------------------------
+
 @app.route(rule='/')
 def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# -----------------------------------
 # 拓展功能1
 @app.route(rule='/1')
 def more_1():
-    print('start 1')
     pass
 
 @app.route(rule='/2')
 def more_2():
-    print('start 1')
     pass
+
 
 # 运行应用程序
 if __name__ == '__main__':
