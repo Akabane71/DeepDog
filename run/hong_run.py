@@ -54,8 +54,6 @@ class HongRun:
 
 if __name__ == "__main__":
     h1 = HongRun('./tmp/macro.pkl')
-    h1.main()
-
     h1.change('./tmp/1.pkl')
     h1.main()
 

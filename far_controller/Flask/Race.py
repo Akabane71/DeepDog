@@ -11,6 +11,7 @@ from flask import Flask, Response, request
 from audio.Audio import Audio
 from controller import Controller
 from qr import QR
+from vision import WhiteFindGreyDIY
 
 """
     比赛专业版本
@@ -26,10 +27,10 @@ server_address = ("192.168.1.120", 43893)
 controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
-fb_val = 22600  # 前进速度
+fb_val = 20000  # 前进速度
 turn_val = 10000  # 转向速度
 move_val = 30000  # 平移速度
-cap_number = 5  # 获取视频的
+cap_number = 4  # 获取视频的
 updown_val = 30000  # 点头摇头速度
 stand = False  # stand 状态
 
@@ -97,7 +98,7 @@ def stop_fb():
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, -13000, 0)
     controller.send(pack)
-    time.sleep(1.25)
+    time.sleep(1.3)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog left'
@@ -107,7 +108,7 @@ def turn_left():
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, 13000, 0)
     controller.send(pack)
-    time.sleep(1.25)
+    time.sleep(1.3)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog right'
@@ -328,6 +329,8 @@ def generate_frames():
                 break
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
+                frame = WhiteFindGreyDIY.keep_white(frame)
+
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流

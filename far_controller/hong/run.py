@@ -1,6 +1,8 @@
 import time
 import pickle
-from pynput.keyboard import Controller
+from threading import Thread
+
+from pynput.keyboard import Controller,Key,Listener
 
 """
     误差在0.1s内
@@ -36,7 +38,7 @@ class HongRun:
                 # Thread(target=keyboard.press,args=(key,)).start()
                 keyboard.press(key)
                 # print('press\t',key)
-            if way == 'release':
+            elif way == 'release':
                 keyboard.release(key)
                 # Thread(target=keyboard.release, args=(key,)).start()
                 # print('release\t',key)

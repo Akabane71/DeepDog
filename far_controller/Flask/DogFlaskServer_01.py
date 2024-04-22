@@ -11,7 +11,8 @@ from flask import Flask, Response,request
 from audio.Audio import Audio
 from controller import Controller
 from qr import QR
-
+from vision import WhiteFindGreyDIY
+from vision.do import white_90
 """
     一直往前走的版本,正式版本
     
@@ -32,10 +33,10 @@ server_address = ("192.168.1.120", 43893)
 controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
-fb_val = 22600  # 前进速度
+fb_val = 20000  # 前进速度
 turn_val = 10000  # 转向速度
 move_val = 30000  # 平移速度
-cap_number = 5  # 获取视频的
+cap_number = 4  # 获取视频的
 updown_val = 30000  # 点头摇头速度
 stand = False  # stand 状态
 
@@ -45,15 +46,17 @@ def heart_exchange(con):
     pack = struct.pack('<3i', 0x21040001, 0, 0)
     while True:
         if stop_heartbeat:
-            break
+            print('dog stop heart!')
+            time.sleep(0.25)
+            continue
         con.send(pack)
         time.sleep(0.25)  # 4Hz
 
 
 heart_exchange_thread = threading.Thread(target=heart_exchange, args=(controller,))
 # 开启守护进程
-heart_exchange_thread.daemon = True
-heart_exchange_thread.start()
+# heart_exchange_thread.daemon = True
+# heart_exchange_thread.start()
 
 # 创建音频对象
 a = Audio()
@@ -171,15 +174,12 @@ def stop_ud():
 @app.route(rule='/stop_heart', methods=['GET'])
 def stop_heart():
     global stop_heartbeat
-    stop_heartbeat = True
+    if stop_heartbeat:
+        stop_heartbeat = False
+    else:
+        stop_heartbeat = True
+    print('dog heart_stop')
     return 'dog heart_stop'
-
-
-@app.route(rule='/re_heart', methods=['GET'])
-def re_heart():
-    global stop_heartbeat
-    stop_heartbeat = False
-    return 'dog restart'
 
 
 # -------------------------
@@ -327,6 +327,9 @@ def generate_frames():
                 break
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
+                frame = WhiteFindGreyDIY.keep_white(frame)
+
+                frame = white_90.put_text_ratio(frame,'right')
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
@@ -348,16 +351,148 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # 拓展功能1
+# 机器狗识别线左转
 @app.route(rule='/1')
 def more_1():
     print('start 1')
-    pass
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        controller.send(pack)
+        while True:
+            c += 1
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                # 二值化
+                frame = WhiteFindGreyDIY.keep_white(frame)
 
+                is_turn_left = white_90.is_turn_left(frame)
+                if is_turn_left:
+                    # 停止前进
+                    time.sleep(0.2)
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    time.sleep(1)
+
+                    # 左转
+                    pack = struct.pack('<3i', 0x21010135, -13000, 0)
+                    controller.send(pack)
+                    time.sleep(1.05)
+                    pack = struct.pack('<3i', 0x21010135, 0, 0)
+                    controller.send(pack)
+                    return 'turn_left_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '1 over'
+    except Exception as e:
+        print('error')
+    finally:
+        if cap is not None:
+            cap.release()
+
+# 机器狗识别线右转
 @app.route(rule='/2')
 def more_2():
-    print('start 1')
+    print('start 2')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        controller.send(pack)
+        while True:
+            c += 1
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                # 二值化
+                frame = WhiteFindGreyDIY.keep_white(frame)
+
+                is_turn_right = white_90.is_turn_right(frame)
+                if is_turn_right:
+                    # 停止前进
+                    time.sleep(0.2)
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    time.sleep(1)
+
+                    # 右转
+                    pack = struct.pack('<3i', 0x21010135, 13000, 0)
+                    controller.send(pack)
+                    time.sleep(1.05)
+                    pack = struct.pack('<3i', 0x21010135, 0, 0)
+                    controller.send(pack)
+                    return 'turn_right_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '2 over'
+    except Exception as e:
+        print('error')
+    finally:
+        if cap is not None:
+            cap.release()
+
+@app.route(rule='/3')
+def more_3():
+    print('start 3')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        controller.send(pack)
+        while True:
+            c += 1
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                # 二值化
+                frame = WhiteFindGreyDIY.keep_white(frame)
+
+                is_turn_left = white_90.is_turn_left(frame)
+                if is_turn_left:
+                    # 停止前进
+                    time.sleep(0.4)
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    time.sleep(1)
+
+                    # 左转
+                    pack = struct.pack('<3i', 0x21010135, -13000, 0)
+                    controller.send(pack)
+                    time.sleep(1.05)
+                    pack = struct.pack('<3i', 0x21010135, 0, 0)
+                    controller.send(pack)
+                    return 'turn_left_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '1 over'
+    except Exception as e:
+        print('error')
+    finally:
+        if cap is not None:
+            cap.release()
     pass
+
+
 
 # 运行应用程序
 if __name__ == '__main__':
+    heart_exchange_thread.daemon = True
+    heart_exchange_thread.start()
     app.run(host='0.0.0.0', debug=True, port=5000)

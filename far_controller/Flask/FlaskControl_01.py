@@ -37,6 +37,11 @@ def on_press(key):
     if key_char == 'c':
         sm.go_get(host, 'clear')
         print('\tclear')
+
+    # # 强制结束生命
+    if key_char == 'v':
+        sm.go_get(host, 'stop_heart')
+        print('\t stop_heart')
     # if key_char == 'b':
     #     sm.go_get(host, 'auto_ball')
     #     print('\auto ball')
@@ -51,6 +56,9 @@ def on_press(key):
     if key_char == '2':
         sm.go_get_thread(host,'2')
         print('\tmore 2')
+    if key_char == '3':
+        sm.go_get_thread(host,'3')
+        print('\tmore 3')
 
     # 基础移动
     if key_char == 'w':

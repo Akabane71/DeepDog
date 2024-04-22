@@ -10,7 +10,7 @@ def record_video(filename, frame_width=640, frame_height=480, duration=20):
     writer = imageio.get_writer(filename, fps=16*2)
 
     # 打开摄像头
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(4)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
@@ -43,6 +43,6 @@ if __name__ == "__main__":
     filename = "./videos/1.mp4"  # 视频文件名
     frame_width = 640  # 视频帧宽度
     frame_height = 480  # 视频帧高度
-    duration = 10  # 录制时长（秒）
+    duration = 60  # 录制时长（秒）
 
     record_video(filename, frame_width, frame_height, duration)
