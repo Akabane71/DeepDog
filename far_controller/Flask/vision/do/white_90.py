@@ -1,4 +1,6 @@
 import cv2
+
+# 视觉测试工具
 def put_text_ratio(binary,left_right):
     if left_right == 'left':
         h, w = 0.9, 0.5

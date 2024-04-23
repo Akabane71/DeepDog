@@ -11,8 +11,8 @@ from flask import Flask, Response,request
 from audio.Audio import Audio
 from controller import Controller
 from qr import QR
-from vision import WhiteFindGreyDIY
-from vision.do import white_90
+from vision import WhiteFindGreyDIY,BlackFindGrayDIY
+from vision.do import white_90,black_stair
 """
     一直往前走的版本,正式版本
     
@@ -34,6 +34,7 @@ controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
 fb_val = 20000  # 前进速度
+auto_fb_val = 10000 # 自动前进速度
 turn_val = 10000  # 转向速度
 move_val = 30000  # 平移速度
 cap_number = 4  # 获取视频的
@@ -327,9 +328,13 @@ def generate_frames():
                 break
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
-                frame = WhiteFindGreyDIY.keep_white(frame)
+                frame = BlackFindGrayDIY.keep_black(image=frame)
 
-                frame = white_90.put_text_ratio(frame,'right')
+                # 黑色楼梯
+                frame = black_stair.put_text_ratio(frame)
+
+                # 白线
+                # frame = white_90.put_text_ratio(frame,'right')
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
@@ -359,7 +364,7 @@ def more_1():
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
-        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
         controller.send(pack)
         while True:
             c += 1
@@ -374,7 +379,7 @@ def more_1():
                 is_turn_left = white_90.is_turn_left(frame)
                 if is_turn_left:
                     # 停止前进
-                    time.sleep(0.2)
+                    time.sleep(1)
                     pack = struct.pack('<3i', 0x21010130, 0, 0)
                     controller.send(pack)
                     time.sleep(1)
@@ -405,7 +410,7 @@ def more_2():
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
-        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
         controller.send(pack)
         while True:
             c += 1
@@ -443,9 +448,66 @@ def more_2():
         if cap is not None:
             cap.release()
 
+
+# 楼梯步
 @app.route(rule='/3')
 def more_3():
     print('start 3')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        # 前进
+        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+        controller.send(pack)
+        while True:
+            c += 1
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                # 二值化
+                frame = BlackFindGrayDIY.keep_black(frame)
+
+                is_stair_step = black_stair.is_stair_step(frame)
+                if is_stair_step:
+                    # 停止前进
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    time.sleep(1)
+
+                    # 切换为楼梯步
+                    pack = struct.pack('<3i', 0x21010401, 0, 0)
+                    controller.send(pack)
+                    # 前进过楼梯
+                    pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+                    controller.send(pack)
+                    time.sleep(3)
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+
+                    # 切换为行走态
+                    pack = struct.pack('<3i', 0x21010300, 0, 0)
+                    controller.send(pack)
+                    return 'stair_step'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '3 over'
+
+    except Exception as e:
+        print('error')
+    finally:
+        if cap is not None:
+            cap.release()
+
+
+# 特供
+@app.route(rule='/4')
+def more_4():
+    print('start 4')
     cap = None
     try:
         cap = cv2.VideoCapture(cap_number)
@@ -487,7 +549,6 @@ def more_3():
     finally:
         if cap is not None:
             cap.release()
-    pass
 
 
 
