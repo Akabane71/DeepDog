@@ -74,7 +74,7 @@ def is_turn_right(binary):
     # print(white_pixel_ratio)
 
     # 结束标志
-    if white_pixel_ratio > 0.1 :
+    if white_pixel_ratio > 0.1:
         return True
     else:
         return False

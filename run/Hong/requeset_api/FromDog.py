@@ -9,7 +9,7 @@ import json
 # Dog host
 host = 'http://192.168.1.101:5000'
 
-# A B 区域
+# a,b 区域
 def get_area():
     url = f'{host}/qr'
     res = requests.get(url)

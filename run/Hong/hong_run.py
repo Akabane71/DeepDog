@@ -53,8 +53,7 @@ class HongRun:
         self.execute_macro(macro)
 
 if __name__ == "__main__":
-    h1 = HongRun('./tmp/macro.pkl')
-    h1.change('./tmp/1.pkl')
+    h1 = HongRun('./tmp/turn_left.pkl')
     h1.main()
 
 

@@ -38,18 +38,27 @@ def on_press(key):
         sm.go_get(host, 'clear')
         print('\tclear')
 
-    # # 强制结束生命
+    #  强制结束生命
     if key_char == 'v':
         sm.go_get(host, 'stop_heart')
         print('\t stop_heart')
-    # if key_char == 'b':
-    #     sm.go_get(host, 'auto_ball')
-    #     print('\auto ball')
+
+    # 自动踢球
+    if key_char == 'b':
+        sm.go_get(host, 'auto_ball')
+        print('\t auto ball')
+
     if key_char == 'p':
         for i in range(3):
             sm.go_stand_up()
             time.sleep(1)
-        print('\tcap changed')
+        print('\t dog stand up')
+
+    # 切换摄像头
+    # if key_char == 'tab':
+    #     sm.go_get_thread(host,'/change_cap')
+    #     print('tab')
+
     if key_char == '1':
         sm.go_get_thread(host,'1')
         print('\tmore 1')
@@ -59,6 +68,10 @@ def on_press(key):
     if key_char == '3':
         sm.go_get_thread(host,'3')
         print('\tmore 3')
+    if key_char == '4':
+        sm.go_get_thread(host,'4')
+        print('\tmore 4')
+
 
     # 基础移动
     if key_char == 'w':
