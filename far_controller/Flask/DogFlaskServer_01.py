@@ -17,11 +17,6 @@ from vision.do import white_90, black_stair
 
 """
     一直往前走的版本,正式版本
-    
-    完成:
-        1. 更新语音
-        2. 标志物识别左右转向完成
-        3. 
 """
 
 os.system(f'sudo clear')  # 引导用户给予root权限，避免忘记sudo运行此脚本
@@ -267,7 +262,7 @@ def audio():
 def qr():
     cap = None
     try:
-        cap = cv2.VideoCapture(cap_number)
+        cap = cv2.VideoCapture(5)
         for i in range(20):
             ret, frame = cap.read()
             if ret == True:
@@ -285,6 +280,7 @@ def qr():
 # ----------------------------------------------------------------------------------------
 # 发送一张
 def capture_frame():
+    t1 = time.time()
     camera = cv2.VideoCapture(5)
     success, frame = camera.read()
     # 使用完要及时释放
@@ -298,6 +294,9 @@ def capture_frame():
         frame = frame[y1:y2, x1:x2]
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
+        t2 = time.time()
+        print(t2-t1)
+        # 总耗时 2.2
         return frame
 
 
@@ -455,6 +454,7 @@ def auto_ball():
                     #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
 
                     # 计算球距离图像中心的偏移量
+                    # offset_x = ball_x - image_center_x - 50 - (1080 - ball_y) / 8
                     offset_x = ball_x - image_center_x
                     # 后续可能使用来优化:判断是否踢到到了球
                     # offset_y = ball_y - image_center_y
@@ -483,11 +483,11 @@ def auto_ball():
 @app.route(rule='/auto_ball')
 def dog_auto_ball():
     auto_ball()
-    pack = struct.pack('<3i', 0x21010135, 13000, 0)
-    controller.send(pack)
-    time.sleep(5)
-    pack = struct.pack('<3i', 0x21010135, 0, 0)
-    controller.send(pack)
+    # pack = struct.pack('<3i', 0x21010135, 13000, 0)
+    # controller.send(pack)
+    # time.sleep(5)
+    # pack = struct.pack('<3i', 0x21010135, 0, 0)
+    # controller.send(pack)
     return 'dog auto ball '
 
 
@@ -627,7 +627,7 @@ def more_3():
                         # 前进过楼梯
                         pack = struct.pack('<3i', 0x21010130, fb_val, 0)
                         controller.send(pack)
-                        time.sleep(3)
+                        time.sleep(3.5)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
 

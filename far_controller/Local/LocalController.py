@@ -7,6 +7,7 @@ import send_msg as sm
 
 """
     本地控制机器狗 LocalContrDog
+        直接启动便可以控制
 """
 
 # Dog_host

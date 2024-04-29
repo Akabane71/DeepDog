@@ -3,7 +3,8 @@ import pickle
 from pynput.keyboard import Controller
 
 """
-    误差在0.1s内
+    宏播放函数
+        误差在0.1s内
 """
 
 key_press = None
@@ -53,7 +54,11 @@ class HongRun:
         self.execute_macro(macro)
 
 if __name__ == "__main__":
-    h1 = HongRun('./tmp/turn_left.pkl')
+    h1 = HongRun('./tmp/step_1.pkl')
+    # h1.main()
+    #
+    # time.sleep(15)
+    h1.change('./tmp/turn_left_90.pkl')
     h1.main()
 
 

@@ -3,6 +3,10 @@ from pynput import keyboard
 
 import send_msg as sm
 
+"""
+    远程控制机器狗，link FlaskServer
+"""
+
 # Dog_host
 host = '192.168.1.101:5000'
 

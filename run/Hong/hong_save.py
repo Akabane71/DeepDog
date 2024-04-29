@@ -4,8 +4,7 @@ from pynput import keyboard
 
 """
     记录运动的脚本
-
-    space 
+        * 按下 - 键结束录制
 """
 
 pressed_keys = set()
@@ -79,6 +78,6 @@ class HongSave:
 
 
 if __name__ == "__main__":
-    h1 = HongSave('./tmp/step_1.pkl')
+    h1 = HongSave('./tmp/turn_left_90.pkl')
     h1.main()
 

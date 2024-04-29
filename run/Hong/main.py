@@ -26,7 +26,7 @@ def identify_area():
 def rescue_area():
     # 救援区域播报
     area,signal,people = FromLocal.get_area_people_signal()
-    print('area{},signal{},people{}'.format(area,signal,people))
+    print('area: {},signal: {},people: {}'.format(area,signal,people))
     FromDog.send_dxl_audio(area, signal, people)
 
     # 增加动作
@@ -50,29 +50,29 @@ def robot_cup_2024():
 
     # 右走
     if lr == "right":
-        h_run.change('./tmp/step_right.pkl')
+        h_run.change('./tmp/step_2_right.pkl')
         h_run.main()
     else:
         # 左走
-        h_run.change('./tmp/step_left.pkl')
+        h_run.change('./tmp/step_2_left.pkl')
         h_run.main()
 
     # 到达识别区域
-    # 1.
+    # 1. 第一个标志物
     rescue_area()
-    time.sleep(1)
+    time.sleep(2)
     # 向左移动一段距离
     h_run.change('./tmp/move_left.pkl')
     h_run.main()
 
     # 2
     rescue_area()
-    time.sleep(1)
+    time.sleep(2)
     h_run.main()
 
     # 3
     rescue_area()
-    time.sleep(1)
+    time.sleep(2)
 
     # 右转前往小球
     h_run.change('./tmp/go_to_ball.pkl')
@@ -92,4 +92,18 @@ def robot_cup_2024():
 
 
 if __name__ == '__main__':
-    area,left_right = identify_area()
+    # 前往qr码
+    h_run.change('./tmp/step_1.pkl')
+    h_run.main()
+    time.sleep(5)
+
+    # 识别qr码选择移动
+    ball, lr = identify_area()
+    # 右走
+    if lr == "right":
+        h_run.change('./tmp/step_2_right.pkl')
+        h_run.main()
+    else:
+        # 左走
+        h_run.change('./tmp/step_2_left.pkl')
+        h_run.main()
