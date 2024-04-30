@@ -35,7 +35,7 @@ def is_stair_step(binary):
     black_pixel_ratio = 1 - (black_pixels / total_pixels)
 
     print('>',black_pixel_ratio)
-    if black_pixel_ratio > 0.2 and black_pixel_ratio < 0.5:
+    if black_pixel_ratio > 0.200 and black_pixel_ratio < 0.5:
         return True
     else:
         return False

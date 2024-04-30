@@ -62,7 +62,9 @@ def on_press(key):
     # if key_char == 'tab':
     #     sm.go_get_thread(host,'/change_cap')
     #     print('tab')
-
+    if key_char == '0':
+        sm.go_get_thread(host,'0')
+        print('\tmore 0')
     if key_char == '1':
         sm.go_get_thread(host,'1')
         print('\tmore 1')
@@ -75,6 +77,12 @@ def on_press(key):
     if key_char == '4':
         sm.go_get_thread(host,'4')
         print('\tmore 4')
+    if key_char == '5':
+        sm.go_get_thread(host,'5')
+        print('\tmore 5')
+    if key_char == '6':
+        sm.go_get_thread(host,'6')
+        print('\tmore 6')
 
 
     # 基础移动

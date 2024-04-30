@@ -318,7 +318,7 @@ def change_cap():
 def generate_frames():
     cap = None
     try:
-        cap = cv2.VideoCapture(cap_number)
+        cap = cv2.VideoCapture(4)
         while True:
             # 读取视频帧
             success, frame = cap.read()
@@ -328,7 +328,7 @@ def generate_frames():
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
                 # frame = BlackFindGrayDIY.keep_black(image=frame)
 
-                #frame = WhiteFindGreyDIY.keep_white(image=frame)
+                # frame = WhiteFindGreyDIY.keep_white(image=frame)
                 # # 黑色楼梯
                 # frame = black_stair.put_text_ratio(frame)
 
@@ -483,14 +483,15 @@ def auto_ball():
 @app.route(rule='/auto_ball')
 def dog_auto_ball():
     auto_ball()
-    # pack = struct.pack('<3i', 0x21010135, 13000, 0)
-    # controller.send(pack)
-    # time.sleep(5)
-    # pack = struct.pack('<3i', 0x21010135, 0, 0)
-    # controller.send(pack)
+    pack = struct.pack('<3i', 0x21010135, 13000, 0)
+    controller.send(pack)
+    time.sleep(3)
+    pack = struct.pack('<3i', 0x21010135, 0, 0)
+    controller.send(pack)
     return 'dog auto ball '
 
-
+# 1.05 移动旋转
+# 1.35 停止旋转
 @app.route(rule='/1')
 def more_1():
     print('start 1')
@@ -517,12 +518,12 @@ def more_1():
                         time.sleep(0.5)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
-                        time.sleep(1)
+                        time.sleep(3)
 
                         # 左转
                         pack = struct.pack('<3i', 0x21010135, -13000, 0)
                         controller.send(pack)
-                        time.sleep(1.05)
+                        time.sleep(1.35)
                         pack = struct.pack('<3i', 0x21010135, 0, 0)
                         controller.send(pack)
                         return 'turn_left_90'
@@ -558,7 +559,7 @@ def more_2():
             if not success:
                 break
             else:
-                if c > 4:
+                if c > 8:
                     # 二值化
                     frame = WhiteFindGreyDIY.keep_white(frame)
 
@@ -568,12 +569,12 @@ def more_2():
                         time.sleep(1)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
-                        time.sleep(1)
+                        time.sleep(3)
 
                         # 右转
                         pack = struct.pack('<3i', 0x21010135, 13000, 0)
                         controller.send(pack)
-                        time.sleep(1.05)
+                        time.sleep(1.35)
                         pack = struct.pack('<3i', 0x21010135, 0, 0)
                         controller.send(pack)
                         return 'turn_right_90'
@@ -592,7 +593,7 @@ def more_2():
             cap.release()
 
 
-# 楼梯步
+# 楼梯步过楼梯
 @app.route(rule='/3')
 def more_3():
     print('start 3')
@@ -610,7 +611,7 @@ def more_3():
             if not success:
                 break
             else:
-                if c > 10:
+                if c > 8:
                     # 二值化
                     frame = BlackFindGrayDIY.keep_black(frame)
 
@@ -648,10 +649,164 @@ def more_3():
             cap.release()
 
 
-# 特供
+# step_1 左转90度
 @app.route(rule='/4')
 def more_4():
     print('start 4')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        while True:
+            c += 1
+            if c == 4:
+                pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+                controller.send(pack)
+            if c > 4:
+                # 读取视频帧
+                success, frame = cap.read()
+                if not success:
+                    break
+                else:
+                    # 二值化
+                    frame = WhiteFindGreyDIY.keep_white(frame)
+
+                    is_turn_left = white_90.is_turn_left(frame)
+                    if is_turn_left:
+                        # 停止前进
+                        time.sleep(1.5)
+                        pack = struct.pack('<3i', 0x21010130, 0, 0)
+                        controller.send(pack)
+                        time.sleep(3)
+
+                        # 左转
+                        pack = struct.pack('<3i', 0x21010135, -13000, 0)
+                        controller.send(pack)
+                        time.sleep(1.35)
+                        pack = struct.pack('<3i', 0x21010135, 0, 0)
+                        controller.send(pack)
+                        return 'turn_left_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '1 over'
+    except Exception as e:
+        print('error')
+        pack = struct.pack('<3i', 0x21010130, 0, 0)
+        controller.send(pack)
+        return 'err auto_turn_left:'
+    finally:
+        if cap is not None:
+            cap.release()
+
+
+# step_2 右转90度
+@app.route(rule='/5')
+def more_5():
+    print('start 5')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        while True:
+            c += 1
+            if c == 4:
+                pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+                controller.send(pack)
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                if c > 4:
+                    # 二值化
+                    frame = WhiteFindGreyDIY.keep_white(frame)
+
+                    is_turn_right = white_90.is_turn_right(frame)
+                    if is_turn_right:
+                        # 停止前进
+                        time.sleep(1.5)
+                        pack = struct.pack('<3i', 0x21010130, 0, 0)
+                        controller.send(pack)
+                        time.sleep(3)
+
+                        # 右转
+                        pack = struct.pack('<3i', 0x21010135, 13000, 0)
+                        controller.send(pack)
+                        time.sleep(1.35)
+                        pack = struct.pack('<3i', 0x21010135, 0, 0)
+                        controller.send(pack)
+                        return 'turn_right_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '2 over'
+    except Exception as e:
+        print('error')
+        pack = struct.pack('<3i', 0x21010130, 0, 0)
+        controller.send(pack)
+        return 'err auto_turn_right:'
+    finally:
+        if cap is not None:
+            cap.release()
+
+# 第三个楼梯左拐
+@app.route(rule='/6')
+def more_6():
+    print('start 2')
+    cap = None
+    try:
+        cap = cv2.VideoCapture(cap_number)
+        c = 0
+        while True:
+            c += 1
+            if c == 4:
+                pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+                controller.send(pack)
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                if c > 4:
+                    # 二值化
+                    frame = WhiteFindGreyDIY.keep_white(frame)
+
+                    is_turn_right = white_90.is_turn_right(frame)
+                    if is_turn_right:
+                        # 停止前进
+                        time.sleep(2)
+                        pack = struct.pack('<3i', 0x21010130, 0, 0)
+                        controller.send(pack)
+                        time.sleep(3)
+
+                        # 右转
+                        pack = struct.pack('<3i', 0x21010135, 13000, 0)
+                        controller.send(pack)
+                        time.sleep(1.35)
+                        pack = struct.pack('<3i', 0x21010135, 0, 0)
+                        controller.send(pack)
+                        return 'turn_right_90'
+
+                if c > 400:
+                    pack = struct.pack('<3i', 0x21010130, 0, 0)
+                    controller.send(pack)
+                    return '2 over'
+    except Exception as e:
+        print('error')
+        pack = struct.pack('<3i', 0x21010130, 0, 0)
+        controller.send(pack)
+        return 'err auto_turn_right:'
+    finally:
+        if cap is not None:
+            cap.release()
+
+# 前往足球区域
+@app.route(rule='/0')
+def more_0():
+    print('start 0')
     cap = None
     try:
         cap = cv2.VideoCapture(cap_number)
@@ -672,6 +827,7 @@ def more_4():
                 is_turn_left = white_90.is_turn_right(frame)
                 if is_turn_left:
                     # 停止前进
+                    time.sleep(0.3)
                     pack = struct.pack('<3i', 0x21010130, 0, 0)
                     controller.send(pack)
                     time.sleep(1)
@@ -686,7 +842,6 @@ def more_4():
     finally:
         if cap is not None:
             cap.release()
-
 
 # 运行应用程序
 if __name__ == '__main__':

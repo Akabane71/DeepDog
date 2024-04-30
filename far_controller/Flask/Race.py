@@ -110,7 +110,7 @@ def stop_fb():
 def turn_left():
     pack = struct.pack('<3i', 0x21010135, -13000, 0)
     controller.send(pack)
-    time.sleep(1.30)
+    time.sleep(1.35)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog left'
@@ -120,7 +120,7 @@ def turn_left():
 def turn_right():
     pack = struct.pack('<3i', 0x21010135, 13000, 0)
     controller.send(pack)
-    time.sleep(1.30)
+    time.sleep(1.35)
     pack = struct.pack('<3i', 0x21010135, 0, 0)
     controller.send(pack)
     return 'dog right'

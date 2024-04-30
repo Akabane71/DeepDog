@@ -54,7 +54,7 @@ def is_turn_left(binary):
     total_pixels = roi.shape[0] * roi.shape[1]
     white_pixel_ratio = white_pixels / total_pixels
 
-    if white_pixel_ratio > 0.4:
+    if white_pixel_ratio > 0.3:
         return True
     else:
         return False

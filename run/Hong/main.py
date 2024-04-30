@@ -95,7 +95,6 @@ if __name__ == '__main__':
     # 前往qr码
     h_run.change('./tmp/step_1.pkl')
     h_run.main()
-    time.sleep(5)
 
     # 识别qr码选择移动
     ball, lr = identify_area()
