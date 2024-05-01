@@ -414,6 +414,7 @@ def detect_ball(frame):
     else:
         return None, None
 
+# 无敌的踢球
 def auto_ball():
     # 打开摄像头
     cap = cv2.VideoCapture(4)
@@ -453,19 +454,24 @@ def auto_ball():
                     # cv2.putText(frame, 'Ball', (ball_x, ball_y),
                     #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
 
-                    # 计算球距离图像中心的偏移量
-                    # offset_x = ball_x - image_center_x - 50 - (1080 - ball_y) / 8
-                    offset_x = ball_x - image_center_x
+                    # 无敌的版本，计算斜率版本，越远，越精准
+                    offset_x = 670 - ball_x + (1080 - ball_y) / 5.15 -offset_threshold
+
+                    # hong的踢球,配合转圈使用
+                    # offset_x = ball_x - image_center_x
+
                     # 后续可能使用来优化:判断是否踢到到了球
                     # offset_y = ball_y - image_center_y
 
                     if lr == 0:
                         # 如果偏移量在一定范围内，左移或右移
                         if abs(offset_x) > offset_threshold:
-                            if offset_x < 0:
-                                controller.send(struct.pack('<3i', 0x21010131, -25000, 0))
+                            if offset_x > 0:
+                                # 左移
+                                controller.send(struct.pack('<3i', 0x21010131, -20000, 0))
                             else:
-                                controller.send(struct.pack('<3i', 0x21010131, 25000, 0))
+                                # 右移动
+                                controller.send(struct.pack('<3i', 0x21010131, 20000, 0))
                         else:
                             # 在一定范围内，前进一次
                             controller.send(struct.pack('<3i', 0x21010131, 0, 0))
@@ -483,11 +489,11 @@ def auto_ball():
 @app.route(rule='/auto_ball')
 def dog_auto_ball():
     auto_ball()
-    pack = struct.pack('<3i', 0x21010135, 13000, 0)
-    controller.send(pack)
-    time.sleep(3)
-    pack = struct.pack('<3i', 0x21010135, 0, 0)
-    controller.send(pack)
+    # pack = struct.pack('<3i', 0x21010135, 13000, 0)
+    # controller.send(pack)
+    # time.sleep(3)
+    # pack = struct.pack('<3i', 0x21010135, 0, 0)
+    # controller.send(pack)
     return 'dog auto ball '
 
 # 1.05 移动旋转
@@ -755,50 +761,49 @@ def more_5():
 # 第三个楼梯左拐
 @app.route(rule='/6')
 def more_6():
-    print('start 2')
+    print('start 1')
     cap = None
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
+        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+        controller.send(pack)
         while True:
             c += 1
-            if c == 4:
-                pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
-                controller.send(pack)
-            # 读取视频帧
-            success, frame = cap.read()
-            if not success:
-                break
-            else:
-                if c > 4:
+            if c > 4:
+                # 读取视频帧
+                success, frame = cap.read()
+                if not success:
+                    break
+                else:
                     # 二值化
                     frame = WhiteFindGreyDIY.keep_white(frame)
 
-                    is_turn_right = white_90.is_turn_right(frame)
-                    if is_turn_right:
+                    is_turn_left = white_90.is_turn_left(frame)
+                    if is_turn_left:
                         # 停止前进
-                        time.sleep(2)
+                        time.sleep(1.25)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
                         time.sleep(3)
 
-                        # 右转
-                        pack = struct.pack('<3i', 0x21010135, 13000, 0)
+                        # 左转
+                        pack = struct.pack('<3i', 0x21010135, -13000, 0)
                         controller.send(pack)
                         time.sleep(1.35)
                         pack = struct.pack('<3i', 0x21010135, 0, 0)
                         controller.send(pack)
-                        return 'turn_right_90'
+                        return 'turn_left_90'
 
                 if c > 400:
                     pack = struct.pack('<3i', 0x21010130, 0, 0)
                     controller.send(pack)
-                    return '2 over'
+                    return '1 over'
     except Exception as e:
         print('error')
         pack = struct.pack('<3i', 0x21010130, 0, 0)
         controller.send(pack)
-        return 'err auto_turn_right:'
+        return 'err auto_turn_left:'
     finally:
         if cap is not None:
             cap.release()

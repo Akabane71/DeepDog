@@ -100,6 +100,7 @@ def robot_cup_2024_g_run():
 def g_save():
     # 前往qr码
     h_save.change_path('./tmp_g/step_1_g.pkl')
+    print('step_1_g.pkl')
     h_save.main()
     time.sleep(1)
 
@@ -109,30 +110,36 @@ def g_save():
     # 右走
     if lr == "right":
         h_save.change_path('./tmp_g/step_2_right_g.pkl')
+        print('step_2_right_g.pkl')
         h_save.main()
         time.sleep(1)
     else:
         # 左走
         h_save.change_path('./tmp_g/step_2_left_g.pkl')
+        print('step_2_left_g.pkl')
         h_save.main()
         time.sleep(1)
 
     h_save.change_path('./tmp_g/step_3_vision_g.pkl')
+    print('step_3_vision_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 左移一小段
     h_save.change_path('./tmp_g/step_3_move_left_g.pkl')
+    print('step_3_move_left_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 录制去小球
     h_save.change_path('./tmp_g/step_4_go_to_ball_g.pkl')
+    print('step_4_go_to_ball_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 左移
     h_save.change_path('./tmp_g/step_5_move_left_g.pkl')
+    print('step_5_move_left_g.pkl')
     h_save.main()
 
 # g狗动作启动函数
@@ -173,9 +180,6 @@ def g_run():
     # 左移
     h_run.change('./tmp_g/step_5_move_left_g.pkl')
     h_run.main()
-
-
-
 
 
 if __name__ == '__main__':

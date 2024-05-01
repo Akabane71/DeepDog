@@ -78,6 +78,6 @@ class HongSave:
 
 
 if __name__ == "__main__":
-    h1 = HongSave('./tmp/step_2_right_g.pkl')
+    h1 = HongSave('./tmp_g/step_2_left_g.pkl')
     h1.main()
 
