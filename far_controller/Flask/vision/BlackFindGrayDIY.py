@@ -50,7 +50,7 @@ def dev_green(frame):
 
     return binary
 
-# 对图像进行膨胀
+# 对图像进行膨胀,去除小噪点
 def dilated_img(img):
     # 定义膨胀核（这里使用一个3x3的正方形核）
     kernel = np.ones((3, 3), np.uint8)

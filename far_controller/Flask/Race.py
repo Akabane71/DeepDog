@@ -16,7 +16,7 @@ from vision import WhiteFindGreyDIY, BlackFindGrayDIY
 from vision.do import white_90, black_stair
 
 """
-    一直往前走的版本,正式版本
+    比赛版本
 
     完成:
         1. 更新语音
@@ -36,7 +36,7 @@ server_address = ("192.168.1.120", 43893)
 controller = Controller.Controller(server_address)
 
 stop_heartbeat = False
-fb_val = 20000  # 前进速度
+fb_val = 10000  # 前进速度
 auto_fb_val = 10000  # 自动前进速度
 turn_val = 10000  # 转向速度
 move_val = 30000  # 平移速度
@@ -718,6 +718,15 @@ def more_4():
                         time.sleep(1.35)
                         pack = struct.pack('<3i', 0x21010135, 0, 0)
                         controller.send(pack)
+
+                        # 再向右平移一段距离
+                        pack = struct.pack('<3i', 0x21010131, 30000, 0)
+                        controller.send(pack)
+                        time.sleep(0.75)
+                        pack = struct.pack('<3i', 0x21010131, 0, 0)
+                        controller.send(pack)
+
+
                         return 'turn_left_90'
 
                 if c > 400:
@@ -809,7 +818,7 @@ def more_6():
                     is_turn_left = white_90.is_turn_left(frame)
                     if is_turn_left:
                         # 停止前进
-                        time.sleep(1.25)
+                        time.sleep(1.0)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
                         time.sleep(3)
@@ -820,12 +829,20 @@ def more_6():
                         time.sleep(1.35)
                         pack = struct.pack('<3i', 0x21010135, 0, 0)
                         controller.send(pack)
+
+                        # 右移一会儿  0x21010131
+                        pack = struct.pack('<3i', 0x21010131, 30000, 0)
+                        controller.send(pack)
+                        time.sleep(1.25)
+                        pack = struct.pack('<3i', 0x21010131, 0, 0)
+                        controller.send(pack)
+
                         return 'turn_left_90'
 
                 if c > 400:
                     pack = struct.pack('<3i', 0x21010130, 0, 0)
                     controller.send(pack)
-                    return '1 over'
+                    return '6 over'
     except Exception as e:
         print('error')
         pack = struct.pack('<3i', 0x21010130, 0, 0)
@@ -843,7 +860,7 @@ def more_0():
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
-        pack = struct.pack('<3i', 0x21010130, fb_val, 0)
+        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
         controller.send(pack)
         time.sleep(4)
         while True:

@@ -327,10 +327,10 @@ def generate_frames():
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
                 # frame = BlackFindGrayDIY.keep_black(image=frame)
-
-                # frame = WhiteFindGreyDIY.keep_white(image=frame)
                 # # 黑色楼梯
                 # frame = black_stair.put_text_ratio(frame)
+
+                # frame = WhiteFindGreyDIY.keep_white(image=frame)
 
                 # 白线
                 # frame = white_90.put_text_ratio(frame,'right')
@@ -340,6 +340,7 @@ def generate_frames():
                 # # 统计左下角区域的黑色像素数量
                 # height, width, _ = frame.shape
                 # frame = frame[int(h * height):height, int(w * width):width]
+
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流

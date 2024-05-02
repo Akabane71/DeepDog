@@ -92,17 +92,4 @@ def robot_cup_2024():
 
 
 if __name__ == '__main__':
-    # 前往qr码
-    h_run.change('./tmp/step_1.pkl')
-    h_run.main()
-
-    # 识别qr码选择移动
-    ball, lr = identify_area()
-    # 右走
-    if lr == "right":
-        h_run.change('./tmp/step_2_right.pkl')
-        h_run.main()
-    else:
-        # 左走
-        h_run.change('./tmp/step_2_left.pkl')
-        h_run.main()
+    rescue_area()
