@@ -326,9 +326,9 @@ def generate_frames():
                 break
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
-                # frame = BlackFindGrayDIY.keep_black(image=frame)
+                frame = BlackFindGrayDIY.keep_black(image=frame)
                 # # 黑色楼梯
-                # frame = black_stair.put_text_ratio(frame)
+                frame = black_stair.put_text_ratio(frame)
 
                 # frame = WhiteFindGreyDIY.keep_white(image=frame)
 

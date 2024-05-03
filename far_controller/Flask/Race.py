@@ -348,12 +348,13 @@ def generate_frames():
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
                 # frame = BlackFindGrayDIY.keep_black(image=frame)
 
-                # frame = WhiteFindGreyDIY.keep_white(image=frame)
+
                 # # 黑色楼梯
                 # frame = black_stair.put_text_ratio(frame)
 
                 # 白线
-                # frame = white_90.put_text_ratio(frame,'right')
+                frame = WhiteFindGreyDIY.keep_white(image=frame)
+                frame = white_90.put_text_ratio(frame,'right')
 
                 # 深度学习数据采集
                 # h, w = 0.8, 0.0
@@ -802,8 +803,6 @@ def more_6():
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
-        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
-        controller.send(pack)
         while True:
             c += 1
             if c > 4:
@@ -812,9 +811,11 @@ def more_6():
                 if not success:
                     break
                 else:
+                    if c == 10:
+                        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+                        controller.send(pack)
                     # 二值化
                     frame = WhiteFindGreyDIY.keep_white(frame)
-
                     is_turn_left = white_90.is_turn_left(frame)
                     if is_turn_left:
                         # 停止前进
