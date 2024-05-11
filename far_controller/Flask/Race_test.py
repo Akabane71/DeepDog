@@ -285,75 +285,91 @@ def audio():
         return 'error: dog not audio'
 
 
-@app.route('/qr', methods=['GET'])
-def qr():
+
+
+############################################################################################
+
+
+# 5号摄像头的节点
+def video_5():
     cap = None
     try:
-        t1 = time.time()
         cap = cv2.VideoCapture(5)
-        for i in range(20):
-            ret, frame = cap.read()
-            if ret == True:
-                res = q.go(frame)
-                if res:
-                    # 释放掉摄像头
-                    cap.release()
-                    t2 = time.time()
-                    print("qr total cost : ",t2-t1)
-                    return res
-        return 'error: not find qr code'
+        while True:
+            # 读取视频帧
+            success, frame = cap.read()
+            if not success:
+                break
+            else:
+                yield frame
     except Exception as e:
-        return 'error: no cap'
+        print('error')
     finally:
         if cap is not None:
             cap.release()
 
 
+@app.route('/qr', methods=['GET'])
+def qr():
+    try:
+        t1 = time.time()
+        for i in range(20):
+            frame = next(video_5(), None)
+            if frame is None:
+                continue
+            res = q.go(frame)
+            if res:
+                t2 = time.time()
+                print("qr total cost :",t2-t1)
+                return res
+        return 'error: not find qr code'
+    except Exception as e:
+        return 'error: no cap'
+
+
 # ----------------------------------------------------------------------------------------
 # 发送一张
 def capture_frame():
-    camera = None
     try:
         t1 = time.time()
-        camera = cv2.VideoCapture(5)
-        success, frame = camera.read()
         # 防止第一次启动
         for i in range(3):
-            success, frame = camera.read()
-        # 查看一下摄像头获取图片的尺寸
-        # 使用完要及时释放
-        camera.release()
-        if success:
+            # 读取一帧视频
+            frame = next(video_5(), None)
+            if frame is None:
+                continue
             # 外接摄像头比较好的裁剪尺寸
             # 定义裁剪区域的坐标
             x1, y1 = 400, 200
             x2, y2 = 1600, 1300
             # 裁剪图像
             frame = frame[y1:y2, x1:x2]
+            # 变成字节流
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             t2 = time.time()
-            print("send img total cost : ",t2-t1)
+            print("total cost: ",t2-t1)
             return frame
     except Exception as e:
         print('error')
-    finally:
-        if camera is not None:
-            camera.release()
-
+        return 'err'
 
 @app.route(rule='/send_img', methods=['GET'])
 def send_img():
     return Response(capture_frame(), mimetype='image/jpeg')
 
 
-# -----------------------------------------------------------------------------------------
 
+
+
+# -----------------------------------------------------------------------------------------
 
 # 改变摄像头
 @app.route(rule='/change_cap', methods=['GET'])
 def change_cap():
     return 'dog cap changed'
+
+
 
 
 def draw(image):
@@ -398,7 +414,7 @@ def generate_frames():
                 # frame = frame[int(h * height):height, int(w * width):width]
 
                 # 导航线
-                frame = draw(frame)
+                # frame = draw(frame)
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
@@ -421,54 +437,8 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-# cap_5的路由
-def generate_frames_5():
-    cap = None
-    try:
-        cap = cv2.VideoCapture(5)
-        while True:
-            # 读取视频帧
-            success, frame = cap.read()
-            # 获取图像尺寸
-            height, width, _ = frame.shape
-            print("height:", height, "\twidth:", width)
-            if not success:
-                break
-            else:
-                x1, y1 = 400, 200
-                x2, y2 = 1600, 1300
-                # # 裁剪图像
-                frame = frame[y1:y2, x1:x2]
-                # 将尺寸改为640,640，降低传输延迟
-                frame = cv2.resize(frame, (640, 640))
 
-                # params = [cv2.IMWRITE_JPEG_QUALITY, 80]  # 质量设置为50
-
-                # 将处理后的视频帧转换为字节流
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame_bytes = buffer.tobytes()
-
-                # 以字节流的形式发送视频帧
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-    except Exception as e:
-        print('error')
-    finally:
-        if cap is not None:
-            cap.release()
-
-@app.route(rule='/cap5')
-def video_5():
-    return Response(generate_frames_5(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-
-
-
-
-# 拓展功能1
-# 机器狗识别线左转
-
+# 踢球
 def detect_ball(frame):
     # 定义 HSV 范围，用于检测球（橘黄色）
     lower_orange = np.array([5, 100, 100])
@@ -603,7 +573,8 @@ def dog_auto_ball():
     controller.send(pack)
     return 'dog auto ball '
 
-
+# 拓展功能1
+# 机器狗识别线左转
 # 1.05 移动旋转
 # 1.35 停止旋转
 @app.route(rule='/1')

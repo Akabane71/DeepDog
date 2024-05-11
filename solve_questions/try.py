@@ -1,12 +1,20 @@
-from collections import Counter
+import cv2
 
-# 假设这是你的列表
-arrays = [[1, 2, 3], [2, 3, 4], [1, 2, 3], [2, 3, 4], [1, 2, 3]]
+# 初始化摄像头
+cap = cv2.VideoCapture(0)
 
-# 统计数组出现的次数
-counter = Counter(map(tuple, arrays))
+# 检查摄像头是否成功打开
+if not cap.isOpened():
+    print("无法打开摄像头")
+    exit()
 
-# 找出出现次数最多的数组
-most_common_array = counter.most_common(1)[0][0]
+# 读取第一帧
+ret, frame = cap.read()
 
-print("出现次数最多的数组是:", list(most_common_array))
+# 获取图像尺寸
+height, width, _ = frame.shape
+print("图像宽度:", width)
+print("图像高度:", height)
+
+# 关闭摄像头
+cap.release()

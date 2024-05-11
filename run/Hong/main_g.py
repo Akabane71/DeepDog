@@ -111,8 +111,9 @@ def robot_cup_2024_g_run():
 
 # g狗的连续录制函数，从起点开始录制
 def g_save():
+    tmp_dir = './tmp_5_10'
     # 前往qr码
-    h_save.change_path('./tmp_g/step_1_g.pkl')
+    h_save.change_path(f'./{tmp_dir}/step_1_g.pkl')
     print('step_1_g.pkl')
     h_save.main()
     time.sleep(1)
@@ -122,36 +123,36 @@ def g_save():
     lr = 'left'
     # 右走
     if lr == "right":
-        h_save.change_path('./tmp_g/step_2_right_g.pkl')
+        h_save.change_path(f'./{tmp_dir}/step_2_right_g.pkl')
         print('step_2_right_g.pkl')
         h_save.main()
         time.sleep(1)
     else:
         # 左走
-        h_save.change_path('./tmp_g/step_2_left_g.pkl')
+        h_save.change_path(f'./{tmp_dir}/step_2_left_g.pkl')
         print('step_2_left_g.pkl')
         h_save.main()
         time.sleep(1)
 
-    h_save.change_path('./tmp_g/step_3_vision_g.pkl')
+    h_save.change_path(f'./{tmp_dir}/step_3_vision_g.pkl')
     print('step_3_vision_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 左移一小段
-    h_save.change_path('./tmp_g/step_3_move_left_g.pkl')
+    h_save.change_path(f'./{tmp_dir}/step_3_move_left_g.pkl')
     print('step_3_move_left_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 录制去小球
-    h_save.change_path('./tmp_g/step_4_go_to_ball_g.pkl')
+    h_save.change_path(f'./{tmp_dir}/step_4_go_to_ball_g.pkl')
     print('step_4_go_to_ball_g.pkl')
     h_save.main()
     time.sleep(1)
 
     # 左移
-    h_save.change_path('./tmp_g/step_5_move_left_g.pkl')
+    h_save.change_path(f'./{tmp_dir}/step_5_move_left_g.pkl')
     print('step_5_move_left_g.pkl')
     h_save.main()
 
@@ -163,8 +164,8 @@ def g_run():
     time.sleep(1)
 
     # 识别qr码选择移动
-    ball, lr = identify_area()
-    # lr = 'right'
+    # ball, lr = identify_area()
+    lr = 'left'
     # 右走
     if lr == "right":
         h_run.change('./tmp_g/step_2_right_g.pkl')
@@ -201,5 +202,7 @@ def g_run():
 
 if __name__ == '__main__':
     # _,_1 = identify_area()
-    # rescue_area()
-    robot_cup_2024_g_run()
+    rescue_area()
+    # robot_cup_2024_g_run()
+    # 测试
+    # g_run()
