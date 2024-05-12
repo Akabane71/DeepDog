@@ -15,8 +15,12 @@ class Audio:
         audio_segments = [AudioSegment.from_wav(file) for file in audio_files]
         # 将音频片段组合成一个声音流
         combined_audio = sum(audio_segments)
+        # 加速倍数（例如，2表示两倍速）
+        speed_multiplier = 1.2
+        # 加速声音流
+        speeded_audio = combined_audio.speedup(playback_speed=speed_multiplier)
         # 播放修改后的声音流
-        play(combined_audio)
+        play(speeded_audio)
 
     def dz(self,area,left_right):
         # 读取多个.wav文件
@@ -24,7 +28,22 @@ class Audio:
         audio_segments = [AudioSegment.from_wav(file) for file in audio_files]
         # 将音频片段组合成一个声音流
         combined_audio = sum(audio_segments)
+
+        # 加速倍数（例如，2表示两倍速）
+        speed_multiplier = 1.2
+        # 加速声音流
+        speeded_audio = combined_audio.speedup(playback_speed=speed_multiplier)
         # 播放修改后的声音流
+        play(speeded_audio)
+
+    # 好玩
+    def just_have_fun(self,f=""):
+        # 读取多个.wav文件
+        audio_files = [f"{code_path}/AudioFiles/dz/left_right/{f}.wav"]
+        audio_segments = [AudioSegment.from_wav(file) for file in audio_files]
+        # 将音频片段组合成一个声音流
+        combined_audio = sum(audio_segments)
+
         play(combined_audio)
 
 

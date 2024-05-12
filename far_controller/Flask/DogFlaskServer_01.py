@@ -855,6 +855,13 @@ def more_0():
         if cap is not None:
             cap.release()
 
+# 搞怪
+@app.route('/hf')
+def just_have_fun():
+    # 选择播放语音
+    a.just_have_fun('')
+    return 'have a nice day'
+
 # 运行应用程序
 if __name__ == '__main__':
     heart_exchange_thread.daemon = True
