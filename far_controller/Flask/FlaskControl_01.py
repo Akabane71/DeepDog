@@ -45,7 +45,7 @@ def on_press(key):
         sm.go_get(host, 'clear')
         print('\tclear')
 
-    #  强制结束生命
+    #  踢球
     if key_char == 'v':
         sm.go_get(host, 'stop_heart')
         print('\t stop_heart')

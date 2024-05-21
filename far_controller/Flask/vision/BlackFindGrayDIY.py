@@ -8,6 +8,7 @@ import cv2
 from PIL import Image
 import numpy as np
 
+
 # 比赛的方案
 def keep_black(image, r_weight=0, g_weight=0.7, b_weight=0.3):
     # 将图像转换为灰度图

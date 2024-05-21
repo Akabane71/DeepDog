@@ -1,17 +1,16 @@
+import csv
 import time
-import pickle
 from threading import Thread
 
 from pynput.keyboard import Controller,Key,Listener
 
-"""
-    误差在0.1s内，
-        存储文件为.pkl
-"""
-
 key_press = None
 key_release = None
 
+"""
+    宏录制可视化、播放函数、可视化版本
+        存储的文件改为.csv
+"""
 
 class HongRun:
     def __init__(self, path):
@@ -45,14 +44,20 @@ class HongRun:
                 # print('release\t',key)
         t2 = time.time()
         print('total:',t2-t1)
+
     def load_macro(self, filename):
-        with open(filename, 'rb') as file:
-            return pickle.load(file)
+        macro = []
+        with open(filename, 'r', newline='') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+            for row in reader:
+                macro.append((row[0], row[1], float(row[2])))
+        return macro
 
     def main(self):
         macro = self.load_macro(self.path)
         self.execute_macro(macro)
 
 if __name__ == "__main__":
-    h1 = HongRun('./tmp/macro.pkl')
+    h1 = HongRun('./test_tmp/macro.csv')
     h1.main()

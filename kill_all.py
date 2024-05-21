@@ -2,7 +2,7 @@ import os
 import psutil
 
 """
-    杀python进程的脚本9
+    杀python进程的脚本
 """
 
 # 杀掉占用最高的进程

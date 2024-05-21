@@ -171,14 +171,54 @@ def stop_ud():
 # ----------------------------------------------------------------------------------------
 #   模式切换
 @app.route(rule='/stop_heart', methods=['GET'])
-def stop_heart():
-    global stop_heartbeat
-    if stop_heartbeat:
-        stop_heartbeat = False
-    else:
-        stop_heartbeat = True
-    print('dog heart_stop')
-    return 'dog heart_stop'
+def auto_find_right_ball():
+    # 打开摄像头
+    cap = cv2.VideoCapture(4)
+
+    # 设置宽泛的偏移范围
+    offset_threshold = 25
+
+    c = 0
+    lr = 0
+    while True:
+        c += 1
+        print('c', c)
+        # 读取一帧
+        ret, frame = cap.read()
+        # 如果成功读取帧
+        if ret:
+            if c >= 10:
+                # 检测球
+                ball_position, ball_radius = detect_ball_find_right(frame)
+                print('检测ball')
+                if ball_position is None:
+                    print('没有小球')
+                    time.sleep(0.2)
+                    return 'no ball'
+                if ball_position is not None:
+                    # 从 detect_ball 函数返回的结果中提取球的位置和半径
+                    (ball_x, ball_y) = ball_position
+
+                    # 无敌的版本，计算斜率版本，越远，越精准
+                    offset_x = 670 - ball_x + (1080 - ball_y) / 5.15 - offset_threshold
+
+                    if lr == 0:
+                        # 如果偏移量在一定范围内，左移或右移
+                        if abs(offset_x) > offset_threshold:
+                            if offset_x > 0:
+                                # 左移
+                                controller.send(struct.pack('<3i', 0x21010131, -20000, 0))
+                            else:
+                                # 右移动
+                                controller.send(struct.pack('<3i', 0x21010131, 20000, 0))
+                        else:
+                            # 结束左右移动
+                            controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+                            return 'find right ball '
+        if c > 400:
+            controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+            time.sleep(0.1)
+            return 'find right ball out of time'
 
 
 # -------------------------
@@ -313,24 +353,136 @@ def send_img():
 
 # -----------------------------------------------------------------------------------------
 
+# 寻找最右侧小球
+def detect_ball_find_right(frame):
+    # 定义 HSV 范围，用于检测球（橘黄色）
+    lower_orange = np.array([5, 100, 100])
+    upper_orange = np.array([15, 255, 255])
 
-# 改变摄像头
+    # 将图像转换为 HSV 格式
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # 使用 HSV 范围过滤图像中的橘黄色（球）
+    mask_ball = cv2.inRange(hsv, lower_orange, upper_orange)
+
+    # 对球的颜色进行腐蚀和膨胀处理，以消除噪音
+    mask_ball = cv2.erode(mask_ball, None, iterations=2)
+    mask_ball = cv2.dilate(mask_ball, None, iterations=2)
+
+    # 寻找球的轮廓
+    contours, _ = cv2.findContours(
+        mask_ball.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+
+    # 如果没有找到轮廓，返回 None
+    if len(contours) == 0:
+        return None, None
+
+    # 找到最右侧的轮廓
+    max_area = 0
+    max_contour = None
+    max_right = 0
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        (x, y, w, h) = cv2.boundingRect(contour)
+        if x > max_right:
+            max_area = area
+            max_contour = contour
+            max_right = x
+
+    # 在最右侧轮廓上画圆
+    if max_contour is not None:
+        ((x, y), radius) = cv2.minEnclosingCircle(max_contour)
+
+        # 如果半径大于设定阈值，则认为检测到了球
+        if radius > 10:
+            return (int(x), int(y)), int(radius)
+
+    return None, None
+
+
+def gen_img(frame):
+    # 寻找最右侧的橙色小球
+    ball_position, ball_radius = detect_ball_find_right(frame)
+    if ball_position is not None:
+        print(ball_position)
+
+    # 绘制检测到的橙色小球
+    if ball_position is not None and ball_radius is not None:
+        # 绘制球心
+        cv2.circle(frame, ball_position, 5, (0, 255, 255), -1)
+        # 绘制最小外接圆
+        cv2.circle(frame, ball_position, ball_radius, (0, 255, 255), 2)
+    return frame
+
+# 自动走到最右侧的小球
 @app.route(rule='/change_cap', methods=['GET'])
-def change_cap():
-    return 'dog cap changed'
+def auto_find_right_ball():
+    # 打开摄像头
+    cap = cv2.VideoCapture(4)
+
+    # 设置宽泛的偏移范围
+    offset_threshold = 25
+
+    # 是否已经前进过的标志位
+    forwarded = False
+    c = 0
+    lr = 0
+    while True:
+        c += 1
+        print('c', c)
+        # 读取一帧
+        ret, frame = cap.read()
+        # 如果成功读取帧
+        if ret:
+            if c >= 30:
+                # 检测球
+                ball_position, ball_radius = detect_ball_find_right(frame)
+                print('检测ball')
+                if ball_position is None:
+                    print('没有小球')
+                    time.sleep(0.2)
+                    break
+                if ball_position is not None:
+                    # 从 detect_ball 函数返回的结果中提取球的位置和半径
+                    (ball_x, ball_y) = ball_position
+
+                    # 无敌的版本，计算斜率版本，越远，越精准
+                    offset_x = 670 - ball_x + (1080 - ball_y) / 5.15 - offset_threshold
+
+                    if lr == 0:
+                        # 如果偏移量在一定范围内，左移或右移
+                        if abs(offset_x) > offset_threshold:
+                            if offset_x > 0:
+                                # 左移
+                                controller.send(struct.pack('<3i', 0x21010131, -20000, 0))
+                            else:
+                                # 右移动
+                                controller.send(struct.pack('<3i', 0x21010131, 20000, 0))
+                        else:
+                            # 结束左右移动
+                            controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+                            return 'find right ball '
+        if c > 400:
+            controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+            time.sleep(0.1)
+            controller.send(struct.pack('<3i', 0x21010130, 0, 0))
+            return 'out time'
 
 
 # 生成视频流
 def generate_frames():
     cap = None
     try:
-        cap = cv2.VideoCapture(5)
+        cap = cv2.VideoCapture(4)
         while True:
             # 读取视频帧
             success, frame = cap.read()
             if not success:
                 break
             else:
+                # 寻找最右侧小球
+                frame = gen_img(frame)
+
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
 
                 # 黑色楼梯
@@ -347,6 +499,7 @@ def generate_frames():
                 # height, width, _ = frame.shape
                 # frame = frame[int(h * height):height, int(w * width):width]
 
+                # 寻找最右侧的黄色小球
 
                 params = [cv2.IMWRITE_JPEG_QUALITY, 50]  # 质量设置为50
                 # 将处理后的视频帧转换为字节流
@@ -491,6 +644,8 @@ def auto_ball():
             time.sleep(0.1)
             controller.send(struct.pack('<3i', 0x21010130, 0, 0))
             break
+
+
 
 # AutoBall
 @app.route(rule='/auto_ball')
@@ -854,6 +1009,11 @@ def more_0():
     finally:
         if cap is not None:
             cap.release()
+
+
+
+
+
 
 # 搞怪
 @app.route('/hf')

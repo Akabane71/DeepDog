@@ -1,22 +1,21 @@
+import csv
 import time
-import pickle
 from pynput import keyboard
-
-"""
-    记录运动的脚本
-        * 按下 - 键结束录制
-"""
 
 pressed_keys = set()
 pressed_once = set()
 
+"""
+    宏录制,录制功能、可视化版本
+"""
 
 class HongSave:
     def __init__(self, path):
         # 保存的文件名称
         self.path = path
-    # 改变路径
-    def change_path(self,path):
+
+    # 切换下一个脚本
+    def load(self,path):
         self.path = path
 
     def record_macro(self):
@@ -68,9 +67,11 @@ class HongSave:
         return macro
 
     def save_macro(self, macro, filename):
-
-        with open(filename, 'wb') as file:
-            pickle.dump(macro, file)
+        with open(filename, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['action', 'key', 'time'])
+            for action, key, time_ in macro:
+                writer.writerow([action, key, time_])
 
     def main(self):
         macro = self.record_macro()
@@ -78,6 +79,8 @@ class HongSave:
 
 
 if __name__ == "__main__":
-    h1 = HongSave('./tmp_g/step_1_g.pkl')
+    t1 = time.time()
+    h1 = HongSave('./test_tmp/macro.csv')
     h1.main()
-
+    t2 = time.time()
+    print(t2 - t1)

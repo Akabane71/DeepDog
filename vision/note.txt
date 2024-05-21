@@ -4,6 +4,7 @@
         深度相机的距离测试 ----- > 用深度相机来感知距离
 			https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python#installation
 			python支持的版本只有Python versions 3.7, 3.8, 3.9, 3.10, 3.11 are supported
+			----> 无法调用，本次比赛也禁止了
 			
 			rs-hello-realsense # 显示距离
 
@@ -33,6 +34,7 @@
     我们需要的是快速的多目标识别算法，速度可以慢一点，但是准确率必须足够高
 
     1.  YOLO
+        ----> 我们选择YOLOv5l模型，识别准确率还行
 
     2.  Faster-RNN
 

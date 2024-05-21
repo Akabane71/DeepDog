@@ -190,16 +190,102 @@ def stop_ud():
 
 
 # ----------------------------------------------------------------------------------------
-#   模式切换
+''' V '''
+# 自动对齐最右侧小球
+# 寻找最右侧小球
+def detect_ball_find_right(frame):
+    # 定义 HSV 范围，用于检测球（橘黄色）
+    lower_orange = np.array([5, 100, 100])
+    upper_orange = np.array([15, 255, 255])
+
+    # 将图像转换为 HSV 格式
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # 使用 HSV 范围过滤图像中的橘黄色（球）
+    mask_ball = cv2.inRange(hsv, lower_orange, upper_orange)
+
+    # 对球的颜色进行腐蚀和膨胀处理，以消除噪音
+    mask_ball = cv2.erode(mask_ball, None, iterations=2)
+    mask_ball = cv2.dilate(mask_ball, None, iterations=2)
+
+    # 寻找球的轮廓
+    contours, _ = cv2.findContours(
+        mask_ball.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+
+    # 如果没有找到轮廓，返回 None
+    if len(contours) == 0:
+        return None, None
+
+    # 找到最右侧的轮廓
+    max_area = 0
+    max_contour = None
+    max_right = 0
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        (x, y, w, h) = cv2.boundingRect(contour)
+        if x > max_right:
+            max_area = area
+            max_contour = contour
+            max_right = x
+
+    # 在最右侧轮廓上画圆
+    if max_contour is not None:
+        ((x, y), radius) = cv2.minEnclosingCircle(max_contour)
+
+        # 如果半径大于设定阈值，则认为检测到了球
+        if radius > 10:
+            return (int(x), int(y)), int(radius)
+
+    return None, None
 @app.route(rule='/stop_heart', methods=['GET'])
-def stop_heart():
-    global stop_heartbeat
-    if stop_heartbeat:
-        stop_heartbeat = False
-    else:
-        stop_heartbeat = True
-    print('dog heart_stop')
-    return 'dog heart_stop'
+def auto_find_right_ball():
+    # 打开摄像头
+    cap = cv2.VideoCapture(4)
+
+    # 设置宽泛的偏移范围
+    offset_threshold = 10
+
+    c = 0 # 时间计数器
+    while True:
+        c += 1
+        print('c', c)
+        # 读取一帧
+        ret, frame = cap.read()
+        # 如果成功读取帧
+        if ret:
+            if c >= 30:
+                # 检测球
+                ball_position, ball_radius = detect_ball_find_right(frame)
+                print('检测ball')
+                if ball_position is None:
+                    print('没有小球')
+                    time.sleep(0.2)
+                if ball_position is not None:
+                    # 从 detect_ball 函数返回的结果中提取球的位置和半径
+                    (ball_x, ball_y) = ball_position
+
+                    # 无敌的版本，计算斜率版本，越远，越精准
+                    offset_x = 670 - ball_x + (1080 - ball_y) / 5.15 - offset_threshold
+
+                    # 如果偏移量在一定范围内，左移或右移
+                    if abs(offset_x) > offset_threshold:
+                        if offset_x > 0:
+                            # 左移
+                            controller.send(struct.pack('<3i', 0x21010131, -20000, 0))
+                        else:
+                            # 右移动
+                            controller.send(struct.pack('<3i', 0x21010131, 20000, 0))
+                    else:
+                        # 结束左右移动
+                        controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+                        time.sleep(0.1)
+                        cap.release()
+                        return 'find right ball '
+        if c > 400:
+            controller.send(struct.pack('<3i', 0x21010131, 0, 0))
+            time.sleep(0.1)
+            cap.release()
+            return 'find right ball out of time'
 
 
 # -------------------------
@@ -350,11 +436,10 @@ def send_img():
 # -----------------------------------------------------------------------------------------
 
 
-# 改变摄像头
-@app.route(rule='/change_cap', methods=['GET'])
-def change_cap():
-    return 'dog cap changed'
 
+
+
+# -------------------
 
 def draw(image):
     # 定义两个点的坐标
@@ -373,7 +458,7 @@ def draw(image):
 def generate_frames():
     cap = None
     try:
-        cap = cv2.VideoCapture(5)
+        cap = cv2.VideoCapture(4)
         while True:
             # 读取视频帧
             success, frame = cap.read()
@@ -381,11 +466,10 @@ def generate_frames():
                 break
             else:
                 # 在这里可以对视频帧进行处理，例如添加滤镜、人脸识别等
-                # frame = BlackFindGrayDIY.keep_black(image=frame)
 
-
-                # # 黑色楼梯
-                # frame = black_stair.put_text_ratio(frame)
+                # 黑色楼梯
+                frame = BlackFindGrayDIY.keep_black(image=frame)
+                frame = black_stair.put_text_ratio(frame)
 
                 # 白线
                 # frame = WhiteFindGreyDIY.keep_white(image=frame)
@@ -715,9 +799,9 @@ def more_3():
     try:
         cap = cv2.VideoCapture(cap_number)
         c = 0
-        # 前进
-        pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
-        controller.send(pack)
+        # # 前进
+        # pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+        # controller.send(pack)
         while True:
             c += 1
             # 读取视频帧
@@ -725,6 +809,11 @@ def more_3():
             if not success:
                 break
             else:
+                # 开始前进
+                if c == 8:
+                    # 前进
+                    pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
+                    controller.send(pack)
                 if c > 10:
                     # 二值化
                     frame = BlackFindGrayDIY.keep_black(frame)
@@ -742,7 +831,7 @@ def more_3():
                         # 前进过楼梯
                         pack = struct.pack('<3i', 0x21010130, fb_val, 0)
                         controller.send(pack)
-                        time.sleep(3)
+                        time.sleep(3.0)
                         pack = struct.pack('<3i', 0x21010130, 0, 0)
                         controller.send(pack)
 
@@ -773,7 +862,7 @@ def more_4():
         c = 0
         while True:
             c += 1
-            if c == 4:
+            if c == 10:
                 pack = struct.pack('<3i', 0x21010130, auto_fb_val, 0)
                 controller.send(pack)
             if c > 4:
@@ -943,7 +1032,7 @@ def more_0():
         c = 0
         pack = struct.pack('<3i', 0x21010130, auto_fb_val + 10000, 0)
         controller.send(pack)
-        time.sleep(4)
+        time.sleep(3.5)
         while True:
             c += 1
             # 读取视频帧
@@ -957,10 +1046,10 @@ def more_0():
                 is_turn_left = white_90.is_turn_right(frame)
                 if is_turn_left:
                     # 停止前进
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                     pack = struct.pack('<3i', 0x21010130, 0, 0)
                     controller.send(pack)
-                    time.sleep(1)
+                    time.sleep(0.51)
                     return 'forward to ball'
 
                 if c > 400:
