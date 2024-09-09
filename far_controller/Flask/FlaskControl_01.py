@@ -5,6 +5,7 @@ import send_msg as sm
 
 """
     远程控制机器狗，link FlaskServer
+    优化: 改为线程池，优化
 """
 
 # Dog_host

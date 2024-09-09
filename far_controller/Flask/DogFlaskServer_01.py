@@ -1012,9 +1012,6 @@ def more_0():
 
 
 
-
-
-
 # 搞怪
 @app.route('/hf')
 def just_have_fun():
@@ -1026,4 +1023,4 @@ def just_have_fun():
 if __name__ == '__main__':
     heart_exchange_thread.daemon = True
     heart_exchange_thread.start()
-    app.run(host='0.0.0.0', debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000) # threaded=True 启动多线程

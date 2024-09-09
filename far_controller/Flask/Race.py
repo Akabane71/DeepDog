@@ -679,12 +679,12 @@ def auto_ball():
 @app.route(rule='/auto_ball')
 def dog_auto_ball():
     auto_ball()
-    pack = struct.pack('<3i', 0x21010135, 13000, 0)
-    controller.send(pack)
-    time.sleep(3)
-
-    pack = struct.pack('<3i', 0x21010135, 0, 0)
-    controller.send(pack)
+    # pack = struct.pack('<3i', 0x21010135, 13000, 0)
+    # controller.send(pack)
+    # time.sleep(3)
+    #
+    # pack = struct.pack('<3i', 0x21010135, 0, 0)
+    # controller.send(pack)
     return 'dog auto ball '
 
 
